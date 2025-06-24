@@ -13,7 +13,8 @@ const DetailScreen = ({ route, navigation } : DetailScreenProp) => {
   const { title } = route.params;
 
   const dispatch = useDispatch();
-  const todo = useSelector((state: RootState) =>state.todos.todos.find((t) => t.title === title));
+
+  const todo = useSelector((state: RootState) =>state.todos.data.find((t) => t.title === title));
 
   const [editMode, setEditMode] = useState(false);
   const [newTitle, setNewTitle] = useState(todo?.title || "");

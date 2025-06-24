@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import "./global.css";
 import {
   StyleSheet,
@@ -9,6 +9,7 @@ import {
   TextInput,
   Pressable,
   ScrollView,
+  Alert,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -21,12 +22,33 @@ import Clock from "./component/clock";
 
 const HomeScreen = () => {
   const [modalVisibility, setModalVisibility] = useState(false);
-  const [title, setTitle] = useState("");
   const titleRef = useRef(null);
-  const [description, setDescription] = useState("");
   const descRef = useRef(null);
 
-  const todos = useSelector((state: RootState) => state.todos.todos);
+  const initialFormState: FormState = {
+    title: "",
+    desc: "",
+  };
+
+  function formReducer(state: FormState, action: FormAction): FormState {
+    switch (action.type) {
+      case "SET_TITLE":
+        return { ...state, title: action.payload };
+      case "SET_DESC":
+        return { ...state, desc: action.payload };
+      case "RESET":
+        return initialFormState;
+      default:
+        return state;
+    }
+  }
+
+  const [formState, formDispatch] = useReducer(formReducer, initialFormState);
+
+  // In redux
+  // get data a part of state with selector
+  const todos: Todo[] = useSelector((state: RootState) => state.todos.data);
+  // dispatch use to start an action
   const dispatch = useDispatch();
 
   const activeTodos = todos.filter((todo) => !todo.isDone);
@@ -59,7 +81,7 @@ const HomeScreen = () => {
       <SafeAreaView className="flex flex-col bg-gray-50 p-4">
         <Clock />
 
-        <ScrollView showsVerticalScrollIndicator={false}  className="h-5/6">
+        <ScrollView showsVerticalScrollIndicator={false} className="h-5/6">
           <View className="my-6">
             <Text className="text-xl font-bold text-gray-800 mb-3 ml-2">
               Not completed ({activeTodos.length})
@@ -99,7 +121,6 @@ const HomeScreen = () => {
                 Add new task
               </Text>
               <Ionicons name="add" size={24} color="black" />
-
             </View>
           </Pressable>
         </View>
@@ -110,12 +131,16 @@ const HomeScreen = () => {
             style={styles.modalView}
             className="gap-4 p-4 rounded-lg flex items-center justify-center w-4/5"
           >
-            <Text className="font-bold text-xl mb-4">What are you had to done?</Text>
+            <Text className="font-bold text-xl mb-4">
+              What do you have to do?
+            </Text>
             <TextInput
               placeholder="Todo title"
               ref={titleRef}
-              value={title}
-              onChangeText={setTitle}
+              value={formState.title}
+              onChangeText={(text) =>
+                formDispatch({ type: "SET_TITLE", payload: text })
+              }
               className="border-2 border-slate-500 focus:border-blue-500 rounded-lg p-3 w-full"
             />
 
@@ -123,8 +148,10 @@ const HomeScreen = () => {
               placeholder="Todo detail"
               multiline={true}
               ref={descRef}
-              value={description}
-              onChangeText={setDescription}
+              value={formState.desc}
+              onChangeText={(text) =>
+                formDispatch({ type: "SET_DESC", payload: text })
+              }
               className="border-2 border-slate-500 focus:border-blue-500 rounded-lg p-3 w-full"
             />
             <View className="flex flex-row gap-4 justify-center items-cente">
@@ -139,9 +166,13 @@ const HomeScreen = () => {
               <Pressable
                 className="flex-1"
                 onPress={() => {
-                  dispatch(addTodo({ title, desc: description }));
-                  setTitle("");
-                  setDescription("");
+                  if (!formState.title.trim()) {
+                    Alert.alert("Validation", "Title is required");
+                    titleRef.current?.focus();
+                    return;
+                  }
+                  dispatch(addTodo({ title: formState.title, desc: formState.desc }));
+                  formDispatch({ type: "RESET" });
                   setModalVisibility(!modalVisibility);
                 }}
               >
@@ -156,6 +187,16 @@ const HomeScreen = () => {
     </SafeAreaProvider>
   );
 };
+
+type FormState = {
+  title: string;
+  desc: string;
+};
+
+type FormAction =
+  | { type: "SET_TITLE"; payload: string }
+  | { type: "SET_DESC"; payload: string }
+  | { type: "RESET" };
 
 const styles = StyleSheet.create({
   modalView: {

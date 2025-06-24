@@ -8,11 +8,11 @@ export type Todo = {
 };
 
 interface TodosState {
-  todos: Todo[];
+  data: Todo[];
 }
 
-const initialState: TodosState = {
-  todos: [
+export const initialState: TodosState = {
+  data: [
     {
       title: "TypeScript",
       desc: "1. JS Basics: Know ES6+ features and basic programming concepts. \n 2. React Native: Understand JSX, components, state, navigation, and Flexbox. \n 3. Setup: Install Node.js, VS Code, emulator/device, and use CLI or Expo.",
@@ -70,46 +70,65 @@ const initialState: TodosState = {
   ],
 };
 
+// A modular piece of state + reducer + actions in one place (from Redux Toolkit)
+// automatically create actions and reducers
+// state ~ State
+// action ~ Event
+// reducer: A pure function that takes the current state and an action, and returns the new state. ~ BLoC
 const todoSlice = createSlice({
   name: "todos",
-  initialState,
+  initialState: initialState,
   reducers: {
     addTodo: (
       state: TodosState,
       action: PayloadAction<{ title: string; desc: string }>
     ) => {
-      state.todos.push({ ...action.payload, isDone: false, createdAt: Date.now() });
+      state.data.push({ ...action.payload, isDone: false, createdAt: Date.now() });
     },
     updateTodo: (
       state: TodosState,
       action: PayloadAction<{ oldTitle: string; newTodo: Todo }>
     ) => {
-      const idx = state.todos.findIndex(
+      const idx = state.data.findIndex(
         (t: Todo) => t.title === action.payload.oldTitle
       );
       if (idx !== -1) {
-        state.todos[idx] = action.payload.newTodo;
+        state.data[idx] = action.payload.newTodo;
       }
     },
     toggleTodo: (
       state: TodosState,
       action: PayloadAction<{ index: number; value: boolean }>
     ) => {
-      if (state.todos[action.payload.index]) {
-        state.todos[action.payload.index].isDone = action.payload.value;
+      if (state.data[action.payload.index]) {
+        state.data[action.payload.index].isDone = action.payload.value;
       }
     },
     deleteTodo: (
       state: TodosState,
       action: PayloadAction<{ todo: Todo }>
     ) => {
-      const idx = state.todos.findIndex((t: Todo) => t.title === action.payload.todo.title);
+      const idx = state.data.findIndex((t: Todo) => t.title === action.payload.todo.title);
       if (idx !== -1) {
-        state.todos = state.todos.filter((v) => v.title !== action.payload.todo.title)
+        state.data = state.data.filter((v) => v.title !== action.payload.todo.title)
       }
     }
   },
 });
+
+// Sample without slice
+// Action
+// const action = { type: 'ADD_TODO', payload: 'Buy milk' };
+//
+// Reducer
+// function todoReducer(state = [], action) {
+//   switch (action.type) {
+//     case 'ADD_TODO':
+//       return [...state, { text: action.payload, done: false }];
+//     default:
+//       return state;
+//   }
+// }
 
 export const { addTodo, updateTodo, toggleTodo, deleteTodo } = todoSlice.actions;
 export default todoSlice.reducer;
