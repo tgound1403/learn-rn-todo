@@ -29,7 +29,7 @@ const TodoDetail = () => {
   return (
     <SafeAreaView className="flex-1 bg-gradient-to-b from-blue-100 to-blue-300 justify-center items-center p-6">
       <Pressable
-        className="absolute top-8 left-4 z-10 flex-row items-center"
+        className="absolute top-12 left-4 z-10 flex-row items-center"
         onPress={() => router.back()}
         hitSlop={16}
       >

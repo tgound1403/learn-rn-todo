@@ -16,13 +16,25 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from './store';
-import { addTodo, updateTodo, toggleTodo } from './todoSlice';
+import { addTodo, toggleTodo } from './todoSlice';
 import type { Todo } from './todoSlice';
 
 function Item({ todo, onToggle }: { todo: Todo, onToggle: (v: boolean) => void }) {
   return (
-    <View className="flex flex-row bg-slate-900 gap-4 p-4 text-white mb-4 rounded-lg justify-start items-start">
-      <Checkbox value={todo.isDone} onValueChange={onToggle} />
+    <View className="flex flex-row bg-white shadow-lg rounded-xl p-4 mb-3 mx-2 items-center border border-gray-100">
+      <Checkbox 
+        value={todo.isDone} 
+        onValueChange={onToggle}
+        className="mr-3"
+      />
+      <View className="flex flex-col gap-1 flex-1 mr-3">
+        <Text className={`text-lg font-semibold ${todo.isDone ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+          {todo.title}
+        </Text>
+        <Text className={`text-sm text-gray-600 line-clamp-2 ${todo.isDone ? 'line-through' : ''}`}>
+          {todo.desc}
+        </Text>
+      </View>
       <Link
         href={{
           pathname: "/todo/[id]",
@@ -32,12 +44,9 @@ function Item({ todo, onToggle }: { todo: Todo, onToggle: (v: boolean) => void }
             isDone: todo.isDone ? "1" : "0"
           }
         }}
+        className="p-2"
       >
-        <View className="flex flex-col gap-2 items-start justify-start">
-          <Text className="text-3xl font-bold text-white">{todo.title}</Text>
-          <Text className="font-light text-lg text-white line-clamp-2 text-ellipsis">{todo.desc}</Text>
-        </View>
-        <AntDesign title="caretright" size={24} color="white" />
+        <AntDesign name="right" size={16} color="#6b7280" />
       </Link>
     </View>
   );
@@ -82,10 +91,10 @@ const App = () => {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 items-center justify-center bg-white p-4">
+      <SafeAreaView className="flex-1 items-center justify-center bg-white px-2 pt-8 pb-2">
         <Clock />
         <FlatList
-          className="p-4 mb-8 w-full"
+          className="px-4 py-2 mb-2 w-full"
           data={todos}
           renderItem={({ item, index }) => (
             <Item
@@ -95,17 +104,17 @@ const App = () => {
           )}
         />
         <Pressable
-          className="border-2 bg-slate-400 border-slate-600 rounded-full p-4"
+          className="border-2 bg-white elevation-md border-slate-500 rounded-full py-2 px-4"
           onPress={() => setModalVisibility(!modalVisibility)}
         >
           <View className="flex flex-row items-center gap-4">
-            <Text className="font-bold text-xl">Add new todo</Text>
+            <Text className="font-bold text-xl text-slate-800">Add new todo</Text>
             <Ionicons name="add" size={24} color="black" />
           </View>
         </Pressable>
       </SafeAreaView>
       <Modal visible={modalVisibility} transparent={true} animationType="slide">
-        <View className="bg-slate-300 flex flex-1 items-center justify-center">
+        <View className="flex flex-1 items-center justify-center">
           <View
             style={styles.modalView}
             className="gap-4 p-4 rounded-lg flex items-center justify-center w-4/5"
