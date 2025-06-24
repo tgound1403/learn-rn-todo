@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 import { View, Text, Pressable } from "react-native";
 import { Todo } from "../todoSlice";
 
@@ -17,7 +17,8 @@ export default function Item({
   return (
     <Pressable
       onPress={() => {
-        navigation.navigate("Detail", {title: todo.title})}}
+        navigation.navigate("Detail", { title: todo.title });
+      }}
     >
       <View className="flex flex-row bg-white shadow-lg rounded-xl py-2 px-3 mb-3 mx-1 items-center border border-gray-100">
         <View className="flex flex-col gap-1 flex-1 mr-3">
@@ -26,11 +27,13 @@ export default function Item({
           >
             {todo.title}
           </Text>
-          <Text
-            className={`text-sm text-gray-600 line-clamp-2 ${todo.isDone ? "line-through" : ""}`}
-          >
-            {todo.desc}
-          </Text>
+          {todo.desc !== "" ? (
+            <Text
+              className={`text-sm text-gray-600 line-clamp-2 ${todo.isDone ? "line-through" : ""}`}
+            >
+              {todo.desc}
+            </Text>
+          ) : null}
         </View>
         <Pressable onPress={() => onToggle(!todo.isDone)}>
           {todo.isDone ? (

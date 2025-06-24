@@ -1,20 +1,22 @@
 import React, { useState } from "react";
 import { SafeAreaView, Text, View, Pressable, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store';
-import { updateTodo, deleteTodo } from '../todoSlice';
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../store";
+import { updateTodo, deleteTodo } from "../todoSlice";
 import { DetailScreenProp } from "../_layout";
 
-// To typecheck our screens, we need to annotate the navigation and the route props received by a screen. 
-// The navigator packages in React Navigation export generic types to define types for both the navigation 
+// To typecheck our screens, we need to annotate the navigation and the route props received by a screen.
+// The navigator packages in React Navigation export generic types to define types for both the navigation
 // and route props from the corresponding navigator.
-const DetailScreen = ({ route, navigation } : DetailScreenProp) => {
+const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
   const { title } = route.params;
 
   const dispatch = useDispatch();
 
-  const todo = useSelector((state: RootState) =>state.todos.data.find((t) => t.title === title));
+  const todo = useSelector((state: RootState) =>
+    state.todos.data.find((t) => t.title === title)
+  );
 
   const [editMode, setEditMode] = useState(false);
   const [newTitle, setNewTitle] = useState(todo?.title || "");
@@ -33,7 +35,12 @@ const DetailScreen = ({ route, navigation } : DetailScreenProp) => {
     dispatch(
       updateTodo({
         oldTitle: todo.title,
-        newTodo: { title: newTitle, desc: newDesc, isDone: done, createdAt: todo.createdAt },
+        newTodo: {
+          title: newTitle,
+          desc: newDesc,
+          isDone: done,
+          createdAt: todo.createdAt,
+        },
       })
     );
     setEditMode(false);

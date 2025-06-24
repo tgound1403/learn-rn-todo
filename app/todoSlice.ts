@@ -40,13 +40,13 @@ export const initialState: TodosState = {
     {
       title: "Routing",
       desc: "Understand components and props, and be familiar with React Navigation basics.",
-      isDone: false,
+      isDone: true,
       createdAt: Date.now(),
     },
     {
       title: "State Management",
       desc: "Understand app-wide state flow, reducers, and state sharing between components.",
-      isDone: false,
+      isDone: true,
       createdAt: Date.now(),
     },
     {
@@ -56,13 +56,13 @@ export const initialState: TodosState = {
       createdAt: Date.now(),
     },
     {
-      title: "native event",
+      title: "Native Event",
       desc: "Communication between native modules (Android/iOS) and React Native using bridges.",
       isDone: false,
       createdAt: Date.now(),
     },
     {
-      title: "Unit testing",
+      title: "Unit Testing",
       desc: "Checks individual components or functions in isolation using tools like Jest and React Native Testing Library.",
       isDone: false,
       createdAt: Date.now(),
@@ -83,7 +83,11 @@ const todoSlice = createSlice({
       state: TodosState,
       action: PayloadAction<{ title: string; desc: string }>
     ) => {
-      state.data.push({ ...action.payload, isDone: false, createdAt: Date.now() });
+      state.data.push({
+        ...action.payload,
+        isDone: false,
+        createdAt: Date.now(),
+      });
     },
     updateTodo: (
       state: TodosState,
@@ -104,15 +108,16 @@ const todoSlice = createSlice({
         state.data[action.payload.index].isDone = action.payload.value;
       }
     },
-    deleteTodo: (
-      state: TodosState,
-      action: PayloadAction<{ todo: Todo }>
-    ) => {
-      const idx = state.data.findIndex((t: Todo) => t.title === action.payload.todo.title);
+    deleteTodo: (state: TodosState, action: PayloadAction<{ todo: Todo }>) => {
+      const idx = state.data.findIndex(
+        (t: Todo) => t.title === action.payload.todo.title
+      );
       if (idx !== -1) {
-        state.data = state.data.filter((v) => v.title !== action.payload.todo.title)
+        state.data = state.data.filter(
+          (v) => v.title !== action.payload.todo.title
+        );
       }
-    }
+    },
   },
 });
 
@@ -130,5 +135,6 @@ const todoSlice = createSlice({
 //   }
 // }
 
-export const { addTodo, updateTodo, toggleTodo, deleteTodo } = todoSlice.actions;
+export const { addTodo, updateTodo, toggleTodo, deleteTodo } =
+  todoSlice.actions;
 export default todoSlice.reducer;

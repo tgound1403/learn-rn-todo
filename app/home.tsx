@@ -43,12 +43,13 @@ const HomeScreen = () => {
     }
   }
 
+  // Overkill for this usecase (2 useState is fine), just use for understanding
   const [formState, formDispatch] = useReducer(formReducer, initialFormState);
 
   // In redux
-  // get data a part of state with selector
+  // get data a part of state with useSelector
   const todos: Todo[] = useSelector((state: RootState) => state.todos.data);
-  // dispatch use to start an action
+  // dispatch from useDispatch use to start an action
   const dispatch = useDispatch();
 
   const activeTodos = todos.filter((todo) => !todo.isDone);
@@ -75,6 +76,17 @@ const HomeScreen = () => {
       />
     );
   };
+
+  function handleSubmit() {
+    if (!formState.title.trim()) {
+      Alert.alert("Title is required", "Please input todo title to add");
+      titleRef.current?.focus();
+      return;
+    }
+    dispatch(addTodo({ title: formState.title, desc: formState.desc }));
+    formDispatch({ type: "RESET" });
+    setModalVisibility(!modalVisibility);
+  }
 
   return (
     <SafeAreaProvider>
@@ -163,19 +175,7 @@ const HomeScreen = () => {
                   Cancel
                 </Text>
               </Pressable>
-              <Pressable
-                className="flex-1"
-                onPress={() => {
-                  if (!formState.title.trim()) {
-                    Alert.alert("Validation", "Title is required");
-                    titleRef.current?.focus();
-                    return;
-                  }
-                  dispatch(addTodo({ title: formState.title, desc: formState.desc }));
-                  formDispatch({ type: "RESET" });
-                  setModalVisibility(!modalVisibility);
-                }}
-              >
+              <Pressable className="flex-1" onPress={handleSubmit}>
                 <Text className="bg-blue-500 rounded-lg text-white p-4 text-center">
                   Submit
                 </Text>
