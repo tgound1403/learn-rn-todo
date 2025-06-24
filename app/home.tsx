@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Checkbox } from 'expo-checkbox';
 import "./global.css";
 import {
   StyleSheet,
@@ -11,60 +10,13 @@ import {
   Pressable,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from './store';
-import { addTodo, toggleTodo } from './todoSlice';
-import type { Todo } from './todoSlice';
-
-function Item({ todo, onToggle }: { todo: Todo, onToggle: (v: boolean) => void }) {
-  return (
-    <View className="flex flex-row bg-white shadow-lg rounded-xl p-4 mb-3 mx-2 items-center border border-gray-100">
-      <Checkbox 
-        value={todo.isDone} 
-        onValueChange={onToggle}
-        className="mr-3"
-      />
-      <View className="flex flex-col gap-1 flex-1 mr-3">
-        <Text className={`text-lg font-semibold ${todo.isDone ? 'line-through text-gray-500' : 'text-gray-800'}`}>
-          {todo.title}
-        </Text>
-        <Text className={`text-sm text-gray-600 line-clamp-2 ${todo.isDone ? 'line-through' : ''}`}>
-          {todo.desc}
-        </Text>
-      </View>
-      <Link
-        href={{
-          pathname: "/todo/[id]",
-          params: {
-            id: todo.title,
-            desc: todo.desc,
-            isDone: todo.isDone ? "1" : "0"
-          }
-        }}
-        className="p-2"
-      >
-        <AntDesign name="right" size={16} color="#6b7280" />
-      </Link>
-    </View>
-  );
-}
-
-const Clock = () => {
-  const [time, setTime] = useState(new Date().toLocaleTimeString());
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(new Date().toLocaleTimeString());
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  return <Text className="font-bold text-2xl">Now is {time}</Text>;
-};
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "./store";
+import { addTodo, toggleTodo } from "./todoSlice";
+import type { Todo } from "./todoSlice";
+import Item from "./component/item";
+import Clock from "./component/clock";
 
 const App = () => {
   // Component state
@@ -76,6 +28,10 @@ const App = () => {
 
   const todos = useSelector((state: RootState) => state.todos.todos);
   const dispatch = useDispatch();
+
+  // Tách todo thành 2 nhóm
+  const activeTodos = todos.filter((todo) => !todo.isDone);
+  const completedTodos = todos.filter((todo) => todo.isDone);
 
   /*
   useEffect() is like componentDidMount, componentDidUpdate, and componentWillUnmount combined.
@@ -89,29 +45,64 @@ const App = () => {
     // console.log("Modal visibility is:", modalVisibility);
   }, [modalVisibility]);
 
+  const renderTodoItem = ({ item, index }: { item: Todo; index: number }) => {
+    const actualIndex = todos.findIndex((todo) => todo.title === item.title);
+    return (
+      <Item
+        todo={item}
+        onToggle={(v) => dispatch(toggleTodo({ index: actualIndex, value: v }))}
+      />
+    );
+  };
+
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 items-center justify-center bg-white px-2 pt-8 pb-2">
+      <SafeAreaView className="flex flex-col bg-gray-50 p-4">
         <Clock />
-        <FlatList
-          className="px-4 py-2 mb-2 w-full"
-          data={todos}
-          renderItem={({ item, index }) => (
-            <Item
-              todo={item}
-              onToggle={(v) => dispatch(toggleTodo({ index, value: v }))}
+
+        {/* Active Todos Section */}
+        <View className="my-6">
+          <Text className="text-xl font-bold text-gray-800 mb-3 ml-2">
+            Đang thực hiện ({activeTodos.length})
+          </Text>
+          <FlatList
+            data={activeTodos}
+            renderItem={renderTodoItem}
+            keyExtractor={(item) => item.title}
+            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+
+        {/* Completed Todos Section */}
+        {completedTodos.length > 0 && (
+          <View className="mb-6">
+            <Text className="text-xl font-bold text-gray-600 mb-3 ml-2">
+              Đã hoàn thành ({completedTodos.length})
+            </Text>
+            <FlatList
+              data={completedTodos}
+              renderItem={renderTodoItem}
+              keyExtractor={(item) => item.title}
+              scrollEnabled={false}
+              showsVerticalScrollIndicator={false}
             />
-          )}
-        />
-        <Pressable
-          className="border-2 bg-white elevation-md border-slate-500 rounded-full py-2 px-4"
-          onPress={() => setModalVisibility(!modalVisibility)}
-        >
-          <View className="flex flex-row items-center gap-4">
-            <Text className="font-bold text-xl text-slate-800">Add new todo</Text>
-            <Ionicons name="add" size={24} color="black" />
           </View>
-        </Pressable>
+        )}
+
+        <View className="flex flex-row justify-center items-center">
+          <Pressable
+            className="border-2 bg-white w-52 elevation-md border-slate-500 rounded-full py-2 px-4"
+            onPress={() => setModalVisibility(!modalVisibility)}
+          >
+            <View className="flex flex-row items-center gap-4">
+              <Text className="font-bold text-xl text-slate-800">
+                Add new todo
+              </Text>
+              <Ionicons name="add" size={24} color="black" />
+            </View>
+          </Pressable>
+        </View>
       </SafeAreaView>
       <Modal visible={modalVisibility} transparent={true} animationType="slide">
         <View className="flex flex-1 items-center justify-center">
