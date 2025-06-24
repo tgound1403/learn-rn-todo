@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import todosReducer from './todoSlice';
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     todos: todosReducer,
   },
@@ -9,3 +9,5 @@ export const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch; 
+
+export default store

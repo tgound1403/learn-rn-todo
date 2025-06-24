@@ -8,6 +8,7 @@ import {
   Modal,
   TextInput,
   Pressable,
+  ScrollView,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -18,8 +19,7 @@ import type { Todo } from "./todoSlice";
 import Item from "./component/item";
 import Clock from "./component/clock";
 
-const App = () => {
-  // Component state
+const HomeScreen = () => {
   const [modalVisibility, setModalVisibility] = useState(false);
   const [title, setTitle] = useState("");
   const titleRef = useRef(null);
@@ -29,7 +29,6 @@ const App = () => {
   const todos = useSelector((state: RootState) => state.todos.todos);
   const dispatch = useDispatch();
 
-  // Tách todo thành 2 nhóm
   const activeTodos = todos.filter((todo) => !todo.isDone);
   const completedTodos = todos.filter((todo) => todo.isDone);
 
@@ -45,7 +44,7 @@ const App = () => {
     // console.log("Modal visibility is:", modalVisibility);
   }, [modalVisibility]);
 
-  const renderTodoItem = ({ item, index }: { item: Todo; index: number }) => {
+  const renderTodoItem = ({ item }: { item: Todo; index: number }) => {
     const actualIndex = todos.findIndex((todo) => todo.title === item.title);
     return (
       <Item
@@ -60,57 +59,58 @@ const App = () => {
       <SafeAreaView className="flex flex-col bg-gray-50 p-4">
         <Clock />
 
-        {/* Active Todos Section */}
-        <View className="my-6">
-          <Text className="text-xl font-bold text-gray-800 mb-3 ml-2">
-            Đang thực hiện ({activeTodos.length})
-          </Text>
-          <FlatList
-            data={activeTodos}
-            renderItem={renderTodoItem}
-            keyExtractor={(item) => item.title}
-            scrollEnabled={false}
-            showsVerticalScrollIndicator={false}
-          />
-        </View>
-
-        {/* Completed Todos Section */}
-        {completedTodos.length > 0 && (
-          <View className="mb-6">
-            <Text className="text-xl font-bold text-gray-600 mb-3 ml-2">
-              Đã hoàn thành ({completedTodos.length})
+        <ScrollView className="h-5/6">
+          <View className="my-6">
+            <Text className="text-xl font-bold text-gray-800 mb-3 ml-2">
+              Not completed ({activeTodos.length})
             </Text>
             <FlatList
-              data={completedTodos}
+              data={activeTodos}
               renderItem={renderTodoItem}
               keyExtractor={(item) => item.title}
               scrollEnabled={false}
               showsVerticalScrollIndicator={false}
             />
           </View>
-        )}
 
-        <View className="flex flex-row justify-center items-center">
+          {completedTodos.length > 0 && (
+            <View className="mb-6">
+              <Text className="text-xl font-bold text-gray-600 mb-3 ml-2">
+                Done ({completedTodos.length})
+              </Text>
+              <FlatList
+                data={completedTodos}
+                renderItem={renderTodoItem}
+                keyExtractor={(item) => item.title}
+                scrollEnabled={false}
+                showsVerticalScrollIndicator={false}
+              />
+            </View>
+          )}
+        </ScrollView>
+
+        <View className="flex relative mx-auto my-8 flex-row justify-center items-center">
           <Pressable
             className="border-2 bg-white w-52 elevation-md border-slate-500 rounded-full py-2 px-4"
             onPress={() => setModalVisibility(!modalVisibility)}
           >
             <View className="flex flex-row items-center gap-4">
               <Text className="font-bold text-xl text-slate-800">
-                Add new todo
+                Add new task
               </Text>
               <Ionicons name="add" size={24} color="black" />
+
             </View>
           </Pressable>
         </View>
       </SafeAreaView>
-      <Modal visible={modalVisibility} transparent={true} animationType="slide">
+      <Modal visible={modalVisibility} transparent={true} animationType="fade">
         <View className="flex flex-1 items-center justify-center">
           <View
             style={styles.modalView}
             className="gap-4 p-4 rounded-lg flex items-center justify-center w-4/5"
           >
-            <Text className="font-bold text-3xl mb-4">Add new todo</Text>
+            <Text className="font-bold text-xl mb-4">What are you had to done?</Text>
             <TextInput
               placeholder="Todo title"
               ref={titleRef}
@@ -118,6 +118,7 @@ const App = () => {
               onChangeText={setTitle}
               className="border-2 border-slate-500 focus:border-blue-500 rounded-lg p-3 w-full"
             />
+
             <TextInput
               placeholder="Todo detail"
               ref={descRef}
@@ -173,4 +174,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default HomeScreen;

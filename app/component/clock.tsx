@@ -1,5 +1,4 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Text } from "react-native";
 
 const Clock = () => {
@@ -13,7 +12,7 @@ const Clock = () => {
       return () => clearInterval(interval);
     }, []);
   
-    return <Text className="font-bold text-center mt-6 text-2xl">Now is {time}</Text>;
+    return <Text className="font-bold text-center mt-2 text-2xl">Now is {time}</Text>;
   };
 
   export default Clock;
