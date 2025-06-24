@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { View, Text, Pressable } from "react-native";
 import { Todo } from "../todoSlice";
 
-/// { todo, onToggle }: { todo: Todo, onToggle: (v: boolean) => void } : props
+/// { todo, onToggle }: { todo: Todo, onToggle: (v: boolean) => void } : props with typecheck
 export default function Item({
   todo,
   onToggle,
@@ -19,7 +19,7 @@ export default function Item({
       onPress={() => {
         navigation.navigate("Detail", {title: todo.title})}}
     >
-      <View className="flex flex-row bg-white shadow-lg rounded-xl p-4 mb-3 mx-2 items-center border border-gray-100">
+      <View className="flex flex-row bg-white shadow-lg rounded-xl py-2 px-3 mb-3 mx-1 items-center border border-gray-100">
         <View className="flex flex-col gap-1 flex-1 mr-3">
           <Text
             className={`text-lg font-semibold ${todo.isDone ? "line-through text-gray-500" : "text-gray-800"}`}
@@ -36,7 +36,7 @@ export default function Item({
           {todo.isDone ? (
             <Ionicons name="checkmark-circle" size={32} color={"#22c55e"} />
           ) : (
-            <Ionicons name="ellipse-outline" size={32} color="#f59e42" />
+            <Ionicons name="ellipse-outline" size={32} color="#cbd5e1" />
           )}
         </Pressable>
       </View>

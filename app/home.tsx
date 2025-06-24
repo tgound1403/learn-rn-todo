@@ -59,7 +59,7 @@ const HomeScreen = () => {
       <SafeAreaView className="flex flex-col bg-gray-50 p-4">
         <Clock />
 
-        <ScrollView className="h-5/6">
+        <ScrollView showsVerticalScrollIndicator={false}  className="h-5/6">
           <View className="my-6">
             <Text className="text-xl font-bold text-gray-800 mb-3 ml-2">
               Not completed ({activeTodos.length})
@@ -121,6 +121,7 @@ const HomeScreen = () => {
 
             <TextInput
               placeholder="Todo detail"
+              multiline={true}
               ref={descRef}
               value={description}
               onChangeText={setDescription}

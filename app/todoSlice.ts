@@ -99,8 +99,17 @@ const todoSlice = createSlice({
         state.todos[action.payload.index].isDone = action.payload.value;
       }
     },
+    deleteTodo: (
+      state: TodosState,
+      action: PayloadAction<{ todo: Todo }>
+    ) => {
+      const idx = state.todos.findIndex((t: Todo) => t.title === action.payload.todo.title);
+      if (idx !== -1) {
+        state.todos = state.todos.filter((v) => v.title !== action.payload.todo.title)
+      }
+    }
   },
 });
 
-export const { addTodo, updateTodo, toggleTodo } = todoSlice.actions;
+export const { addTodo, updateTodo, toggleTodo, deleteTodo } = todoSlice.actions;
 export default todoSlice.reducer;
