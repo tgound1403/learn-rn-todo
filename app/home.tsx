@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -54,7 +55,7 @@ const HomeScreen = () => {
     }
   }
 
-  // Overkill for this usecase (2 useState is fine), just use for understanding
+  // Overkill for this usecase (2 useState is fine or useState with form object), just use for understanding
   const [formState, formDispatch] = useReducer(formReducer, initialFormState);
 
   // In redux
@@ -96,7 +97,8 @@ const HomeScreen = () => {
     );
   };
 
-  function handleSubmit() {
+  // useCallback is a React Hook that lets you cache a function definition between re-renders.
+  const handleSubmit = useCallback(() => {
     if (!formState.title.trim()) {
       Alert.alert("Title is required", "Please input todo title to add");
       titleRef.current?.focus();
@@ -105,12 +107,19 @@ const HomeScreen = () => {
     dispatch(addTodo({ title: formState.title, desc: formState.desc }));
     formDispatch({ type: "RESET" });
     setModalVisibility(!modalVisibility);
+  }, [formState.title, formState.desc, dispatch, modalVisibility]);
+
+  const handleCancel= () => {
+    formDispatch({ type: "RESET" });
+    setModalVisibility(!modalVisibility);
   }
 
   return (
     <SafeAreaProvider>
       <SafeAreaView className="flex flex-col bg-gray-50 dark:bg-gray-700 p-4">
-        <View className={`flex flex-row justify-between items-center p-2 ${!isDarkMode ? "bg-white" : "bg-black"} rounded-md elevation-sm`}>
+        <View
+          className={`flex flex-row justify-between items-center py-2 px-3 ${!isDarkMode ? "bg-white" : "bg-black"} rounded-md elevation-sm`}
+        >
           <Clock isDarkMode={isDarkMode} />
           <Pressable onPress={toggleTheme}>
             {isDarkMode ? (
@@ -197,7 +206,7 @@ const HomeScreen = () => {
             <View className="flex flex-row gap-4 justify-center items-cente">
               <Pressable
                 className="flex-1"
-                onPress={() => setModalVisibility(!modalVisibility)}
+                onPress={handleCancel}
               >
                 <Text className="bg-red-500 rounded-lg text-white p-4 text-center">
                   Cancel

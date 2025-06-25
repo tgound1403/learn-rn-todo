@@ -48,7 +48,7 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 justify-center items-center py-12 px-4">
+    <SafeAreaView className="flex-1 flex-col justify-between py-12 bg-white">
       <Pressable
         className="absolute top-12 left-4 z-10 flex-row items-center"
         onPress={() => navigation.goBack()}
@@ -56,8 +56,8 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
       >
         <Ionicons name="arrow-back" size={28} color="#2563eb" />
       </Pressable>
-      <View className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-xl items-start">
-        <View className="flex-row items-start">
+      <View className="p-5 w-full max-w-xl items-start">
+        <View className="flex-row items-start mt-8">
           {editMode ? (
             <TextInput
               className="text-3xl font-extrabold text-blue-700 border-b border-blue-300"
@@ -72,54 +72,51 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
           )}
         </View>
         <View className="flex-row items-center justify-center my-2">
-          <Text className="text-base font-semibold text-gray-600 mr-2">
-            Status:
-          </Text>
           <Text
-            className={`text-base font-bold ${done ? "text-green-600" : "text-orange-500"}`}
+            className={` text-white font-bold ${done ? "bg-green-600" : "bg-orange-500"} py-1 px-4 rounded-full`}
           >
-            {done ? "Done" : "Not completed"}
+            {done ? "Done" : "To do"}
           </Text>
         </View>
         {editMode ? (
           <TextInput
-            className="text-lg text-gray-700 border-b border-blue-200 w-full"
+            className="text-lg text-gray-700 border-b border-blue-200 w-full mt-4"
             value={newDesc}
             onChangeText={setNewDesc}
             placeholder="Description"
             multiline
           />
         ) : (
-          <Text className="text-lg text-gray-700">{todo.desc}</Text>
+          <Text className="text-lg text-gray-700 mt-4">{todo.desc}</Text>
         )}
-        <View className="flex-row items-center justify-center mt-4 gap-4">
+      </View>
+      <View className="flex-row items-center justify-center mt-4 gap-4 px-6">
           <Pressable
-            className="px-4 py-2 bg-blue-500 rounded-lg"
+            className="px-4 py-2 bg-blue-500 rounded-lg w-1/2"
             onPress={() => setEditMode(!editMode)}
           >
-            <Text className="text-white font-semibold">
+            <Text className="text-white text-center font-semibold">
               {editMode ? "Cancel" : "Edit"}
             </Text>
           </Pressable>
           {editMode && (
             <Pressable
-              className="px-4 py-2 bg-green-500 rounded-lg"
+              className="px-4 py-2 w-1/2 bg-green-500 rounded-lg"
               onPress={handleSave}
             >
-              <Text className="text-white font-semibold">Save</Text>
+              <Text className="text-white text-center font-semibold">Save</Text>
             </Pressable>
           )}
-          <Pressable
-            className="px-4 py-2 bg-red-500 rounded-lg"
+          {!editMode && (<Pressable
+            className="px-4 py-2 bg-red-500 w-1/2 rounded-lg"
             onPress={() => {
               dispatch(deleteTodo({ todo: todo }));
               navigation.goBack();
             }}
           >
-            <Text className="text-white font-semibold">Delete</Text>
-          </Pressable>
+            <Text className="text-white text-center font-semibold">Delete</Text>
+          </Pressable>)}
         </View>
-      </View>
     </SafeAreaView>
   );
 };

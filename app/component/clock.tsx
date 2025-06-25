@@ -6,13 +6,13 @@ const Clock = ({isDarkMode}: {isDarkMode: boolean}) => {
   
     useEffect(() => {
       const interval = setInterval(() => {
-        setTime(new Date().toLocaleTimeString());
+        setTime(new Date().toLocaleString());
       }, 1000);
   
       return () => clearInterval(interval);
     }, []);
   
-    return <Text className={`font-bold text-center text-2xl ${isDarkMode ? "text-white" : "text-black"}`} >Now is {time}</Text>;
+    return <Text className={`font-semibold text-center text-xl ${isDarkMode ? "text-white" : "text-black"}`} >{time}</Text>;
   };
 
   export default Clock;
