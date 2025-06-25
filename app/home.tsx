@@ -85,7 +85,11 @@ const HomeScreen = () => {
   | `componentDidUpdate`   | `useEffect(() => {}, [deps])`        |
   | `componentWillUnmount` | `return () => {}` inside `useEffect` |
   */
+
+  const { CalendarModule } = NativeModules;
+  
   useEffect(() => {
+    CalendarModule.createCalendarEvent('testName', 'testLocation');
     getContacts().then((contacts) => console.log(contacts))
   .catch((e) => console.error(e));
   }, []);
@@ -115,10 +119,7 @@ const HomeScreen = () => {
   const handleCancel= () => {
     formDispatch({ type: "RESET" });
     setModalVisibility(!modalVisibility);
-    // CalendarModule.createCalendarEvent('testName', 'testLocation');
   }
-
-  const { CalendarModule } = NativeModules;
 
   return (
     <SafeAreaProvider>
