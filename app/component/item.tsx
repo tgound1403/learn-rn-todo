@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Platform } from "react-native";
 import { Todo } from "../todoSlice";
 
 /// { todo, onToggle }: { todo: Todo, onToggle: (v: boolean) => void } : props with typecheck
@@ -20,7 +20,7 @@ export default function Item({
         navigation.navigate("Detail", { title: todo.title });
       }}
     >
-      <View className="flex flex-row bg-white shadow-lg rounded-xl py-2 px-3 mb-3 mx-1 items-center border border-gray-100">
+      <View className={`flex flex-row bg-white elevation-md ${Platform.OS === 'android' ? "shadow-lg" : null} rounded-xl py-2 px-3 mb-3 mx-1 items-center border border-gray-100`}>
         <View className="flex flex-col gap-1 flex-1 mr-3">
           <Text
             className={`text-lg font-semibold ${todo.isDone ? "line-through text-gray-500" : "text-gray-800"}`}
