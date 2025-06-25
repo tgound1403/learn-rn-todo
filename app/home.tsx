@@ -18,6 +18,7 @@ import {
   Pressable,
   ScrollView,
   Alert,
+  NativeModules
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -30,6 +31,7 @@ import Clock from "./component/clock";
 import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemeContext } from "./provider/themeProvider";
+import { getContacts } from "./bridges/contactModule";
 
 const HomeScreen = () => {
   const [modalVisibility, setModalVisibility] = useState(false);
@@ -84,8 +86,9 @@ const HomeScreen = () => {
   | `componentWillUnmount` | `return () => {}` inside `useEffect` |
   */
   useEffect(() => {
-    // console.log("is dark mode", isDarkMode);
-  }, [isDarkMode]);
+    getContacts().then((contacts) => console.log(contacts))
+  .catch((e) => console.error(e));
+  }, []);
 
   const renderTodoItem = ({ item }: { item: Todo; index: number }) => {
     const actualIndex = todos.findIndex((todo) => todo.title === item.title);
@@ -112,7 +115,10 @@ const HomeScreen = () => {
   const handleCancel= () => {
     formDispatch({ type: "RESET" });
     setModalVisibility(!modalVisibility);
+    // CalendarModule.createCalendarEvent('testName', 'testLocation');
   }
+
+  const { CalendarModule } = NativeModules;
 
   return (
     <SafeAreaProvider>

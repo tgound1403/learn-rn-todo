@@ -54,4 +54,9 @@ class MainApplication : Application(), ReactApplication {
     super.onConfigurationChanged(newConfig)
     ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
   }
+
+  override fun getPackages(): List<ReactPackage> =
+    PackageList(this).packages.apply {
+      add(MyAppPackage())
+    }
 }

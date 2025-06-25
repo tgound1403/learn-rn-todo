@@ -34,7 +34,7 @@ export const initialState: TodosState = {
     {
       title: "React Hook",
       desc: "1. Use state and lifecycle features in functional components. \n 2. Understand common hooks include useState, useEffect, useContext, useReducer, useRef, useMemo, useCallBack",
-      isDone: false,
+      isDone: true,
       createdAt: Date.now(),
     },
     {
