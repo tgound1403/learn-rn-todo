@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { Text } from "react-native";
 
-const Clock = () => {
+const Clock = ({isDarkMode}: {isDarkMode: boolean}) => {
     const [time, setTime] = useState(new Date().toLocaleTimeString());
   
     useEffect(() => {
@@ -12,7 +12,7 @@ const Clock = () => {
       return () => clearInterval(interval);
     }, []);
   
-    return <Text className="font-bold text-center mt-2 text-2xl">Now is {time}</Text>;
+    return <Text className={`font-bold text-center text-2xl ${isDarkMode ? "text-white" : "text-black"}`} >Now is {time}</Text>;
   };
 
   export default Clock;

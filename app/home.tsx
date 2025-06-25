@@ -1,4 +1,11 @@
-import React, { useEffect, useReducer, useRef, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import "./global.css";
 import {
   StyleSheet,
@@ -19,9 +26,13 @@ import { addTodo, toggleTodo } from "./todoSlice";
 import type { Todo } from "./todoSlice";
 import Item from "./component/item";
 import Clock from "./component/clock";
+import Entypo from "@expo/vector-icons/Entypo";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { ThemeContext } from "./provider/themeProvider";
 
 const HomeScreen = () => {
   const [modalVisibility, setModalVisibility] = useState(false);
+  const { toggleTheme, isDarkMode } = useContext(ThemeContext);
   const titleRef = useRef(null);
   const descRef = useRef(null);
 
@@ -52,8 +63,16 @@ const HomeScreen = () => {
   // dispatch from useDispatch use to start an action
   const dispatch = useDispatch();
 
-  const activeTodos = todos.filter((todo) => !todo.isDone);
-  const completedTodos = todos.filter((todo) => todo.isDone);
+  // useMemo is a React Hook that lets you cache the result of a calculation between re-renders.
+  const completedTodos = useMemo(
+    () => todos.filter((todo) => todo.isDone),
+    [todos]
+  );
+
+  const activeTodos = useMemo(
+    () => todos.filter((todo) => !todo.isDone),
+    [todos]
+  );
 
   /*
   useEffect() is like componentDidMount, componentDidUpdate, and componentWillUnmount combined.
@@ -64,8 +83,8 @@ const HomeScreen = () => {
   | `componentWillUnmount` | `return () => {}` inside `useEffect` |
   */
   useEffect(() => {
-    // console.log("Modal visibility is:", modalVisibility);
-  }, [modalVisibility]);
+    // console.log("is dark mode", isDarkMode);
+  }, [isDarkMode]);
 
   const renderTodoItem = ({ item }: { item: Todo; index: number }) => {
     const actualIndex = todos.findIndex((todo) => todo.title === item.title);
@@ -90,8 +109,17 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex flex-col bg-gray-50 p-4">
-        <Clock />
+      <SafeAreaView className="flex flex-col bg-gray-50 dark:bg-gray-700 p-4">
+        <View className={`flex flex-row justify-between items-center p-2 ${!isDarkMode ? "bg-white" : "bg-black"} rounded-md elevation-sm`}>
+          <Clock isDarkMode={isDarkMode} />
+          <Pressable onPress={toggleTheme}>
+            {isDarkMode ? (
+              <MaterialIcons name="dark-mode" size={24} color="white" />
+            ) : (
+              <Entypo name="light-up" size={24} color="black" />
+            )}
+          </Pressable>
+        </View>
 
         <ScrollView showsVerticalScrollIndicator={false} className="h-5/6">
           <View className="my-6">

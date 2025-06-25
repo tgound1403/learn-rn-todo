@@ -1,11 +1,14 @@
-import React from 'react';
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import AppStack from "./_layout";
+import ThemeProvider from "./provider/themeProvider";
 
 export default function App() {
   return (
     <NavigationContainer>
-      <AppStack />
+      <ThemeProvider>
+        <AppStack />
+      </ThemeProvider>
     </NavigationContainer>
   );
 }
