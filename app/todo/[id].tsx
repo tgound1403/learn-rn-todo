@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { SafeAreaView, Text, View, Pressable, TextInput } from "react-native";
+import {
+  SafeAreaView,
+  Text,
+  View,
+  Pressable,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store";
@@ -48,7 +58,10 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 flex-col justify-between py-12 bg-white">
+    <KeyboardAvoidingView
+      className="h-full flex flex-col justify-between pt-12 bg-white"
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <Pressable
         className="absolute top-12 left-4 z-10 flex-row items-center"
         onPress={() => navigation.goBack()}
@@ -56,68 +69,72 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
       >
         <Ionicons name="arrow-back" size={28} color="#2563eb" />
       </Pressable>
-      <View className="p-5 w-full max-w-xl items-start">
-        <View className="flex-row items-start mt-8">
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View className="p-5 w-full max-w-xl items-start">
+          <View className="flex-row items-start mt-8">
+            {editMode ? (
+              <TextInput
+                className="text-3xl font-extrabold text-blue-700 border-b border-blue-300"
+                value={newTitle}
+                onChangeText={setNewTitle}
+                placeholder="Tiêu đề"
+              />
+            ) : (
+              <Text className="text-3xl font-extrabold text-blue-700">
+                {todo.title}
+              </Text>
+            )}
+          </View>
+          <View className="flex-row items-center justify-center my-2">
+            <Text
+              className={` text-white font-bold ${done ? "bg-green-600" : "bg-orange-500"} py-1 px-4 rounded-full`}
+            >
+              {done ? "Done" : "To do"}
+            </Text>
+          </View>
           {editMode ? (
             <TextInput
-              className="text-3xl font-extrabold text-blue-700 border-b border-blue-300"
-              value={newTitle}
-              onChangeText={setNewTitle}
-              placeholder="Tiêu đề"
+              className="text-lg text-gray-700 border-b border-blue-200 w-full mt-4"
+              value={newDesc}
+              onChangeText={setNewDesc}
+              placeholder="Description"
+              multiline
             />
           ) : (
-            <Text className="text-3xl font-extrabold text-blue-700">
-              {todo.title}
-            </Text>
+            <Text className="text-lg text-gray-700 mt-4">{todo.desc}</Text>
           )}
         </View>
-        <View className="flex-row items-center justify-center my-2">
-          <Text
-            className={` text-white font-bold ${done ? "bg-green-600" : "bg-orange-500"} py-1 px-4 rounded-full`}
-          >
-            {done ? "Done" : "To do"}
+      </TouchableWithoutFeedback>
+      <View className="flex-row items-center justify-center mb-8 gap-4 px-6">
+        <Pressable
+          className="p-4 bg-blue-500 rounded-lg w-1/2"
+          onPress={() => setEditMode(!editMode)}
+        >
+          <Text className="text-white text-center font-semibold">
+            {editMode ? "Cancel" : "Edit"}
           </Text>
-        </View>
-        {editMode ? (
-          <TextInput
-            className="text-lg text-gray-700 border-b border-blue-200 w-full mt-4"
-            value={newDesc}
-            onChangeText={setNewDesc}
-            placeholder="Description"
-            multiline
-          />
-        ) : (
-          <Text className="text-lg text-gray-700 mt-4">{todo.desc}</Text>
-        )}
-      </View>
-      <View className="flex-row items-center justify-center mt-4 gap-4 px-6">
+        </Pressable>
+        {editMode && (
           <Pressable
-            className="px-4 py-2 bg-blue-500 rounded-lg w-1/2"
-            onPress={() => setEditMode(!editMode)}
+            className="p-4 w-1/2 bg-green-500 rounded-lg"
+            onPress={handleSave}
           >
-            <Text className="text-white text-center font-semibold">
-              {editMode ? "Cancel" : "Edit"}
-            </Text>
+            <Text className="text-white text-center font-semibold">Save</Text>
           </Pressable>
-          {editMode && (
-            <Pressable
-              className="px-4 py-2 w-1/2 bg-green-500 rounded-lg"
-              onPress={handleSave}
-            >
-              <Text className="text-white text-center font-semibold">Save</Text>
-            </Pressable>
-          )}
-          {!editMode && (<Pressable
-            className="px-4 py-2 bg-red-500 w-1/2 rounded-lg"
+        )}
+        {!editMode && (
+          <Pressable
+            className="p-4 bg-red-500 w-1/2 rounded-lg"
             onPress={() => {
               dispatch(deleteTodo({ todo: todo }));
               navigation.goBack();
             }}
           >
             <Text className="text-white text-center font-semibold">Delete</Text>
-          </Pressable>)}
-        </View>
-    </SafeAreaView>
+          </Pressable>
+        )}
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
