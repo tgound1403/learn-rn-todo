@@ -31,6 +31,12 @@
           <string>com.anonymous.todo</string>
         </array>
       </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>com.googleusercontent.apps.230862524329-oo8ekd90ipbrom3u920sua0ql045315e</string>
+        </array>
+      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>

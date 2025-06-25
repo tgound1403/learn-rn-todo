@@ -6,6 +6,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
+        classpath 'com.google.gms:google-services:4.4.1'
     classpath('com.android.tools.build:gradle')
     classpath('com.facebook.react:react-native-gradle-plugin')
     classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
@@ -19,14 +20,6 @@ def reactNativeAndroidDir = new File(
   }.standardOutput.asText.get().trim(),
   "../android"
 )
-
-task testNode {
-  doLast {
-    exec {
-      commandLine '/opt/homebrew/opt/node@20/bin/node', '--version'
-    }
-  }
-}
 
 allprojects {
   repositories {

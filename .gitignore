@@ -3,6 +3,9 @@
 # dependencies
 node_modules/
 
+google_services.json
+GoogleService-Info.plist
+
 # Expo
 .expo/
 dist/
