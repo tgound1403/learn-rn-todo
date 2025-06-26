@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { View, Text, Pressable, Platform } from "react-native";
-import { Todo } from "../todoSlice";
+import { Todo } from "../store/todoSlice";
 
 /// { todo, onToggle }: { todo: Todo, onToggle: (v: boolean) => void } : props with typecheck
 export default function Item({

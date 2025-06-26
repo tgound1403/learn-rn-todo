@@ -7,7 +7,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import "./global.css";
 import {
   StyleSheet,
   FlatList,
@@ -18,20 +17,20 @@ import {
   Pressable,
   ScrollView,
   Alert,
-  NativeModules
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "./store";
-import { addTodo, toggleTodo } from "./todoSlice";
-import type { Todo } from "./todoSlice";
-import Item from "./component/item";
-import Clock from "./component/clock";
+import { addTodo, toggleTodo } from "../store/todoSlice";
+import type { Todo } from "../store/todoSlice";
+import Item from "../component/item";
+import Clock from "../component/clock";
 import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { ThemeContext } from "./provider/themeProvider";
-import { getContacts } from "./bridges/contactModule";
+import { ThemeContext } from "../provider/themeProvider";
+import { getContacts } from "../bridges/contactModule";
+import { RootState } from "../store/store";
+import '../global.css';
 
 const HomeScreen = () => {
   const [modalVisibility, setModalVisibility] = useState(false);
