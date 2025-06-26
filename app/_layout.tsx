@@ -1,12 +1,12 @@
 import React from "react";
 import "./global.css";
 import { Provider } from "react-redux";
-import store from "./store";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "./home";
 import DetailScreen from "./todo/[id]";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import ThemeProvider from "./provider/themeProvider";
+import store from "./store/store";
+import HomeScreen from "./screens/home";
 
 // create an object type with mappings for route names to the params of the route
 type RootStackParamList = {

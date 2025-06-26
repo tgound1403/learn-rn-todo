@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { deleteTodoFromDB, getTodosFromDB, insertTodo, updateTodoStatus } from '../database/todoDatabase';
 
 export type Todo = {
   title: string;
@@ -79,10 +80,17 @@ const todoSlice = createSlice({
   name: "todos",
   initialState: initialState,
   reducers: {
+    loadTodo: (__: TodosState, _: PayloadAction<undefined>) => {
+      getTodosFromDB().then((res)=>console.log(res))
+      for (let todo in initialState.data) {
+        insertTodo(initialState.data[todo].title, initialState.data[todo].desc)
+      }
+    },
     addTodo: (
       state: TodosState,
       action: PayloadAction<{ title: string; desc: string }>
     ) => {
+      insertTodo(action.payload.title, action.payload.desc)
       state.data.push({
         ...action.payload,
         isDone: false,
@@ -106,6 +114,7 @@ const todoSlice = createSlice({
     ) => {
       if (state.data[action.payload.index]) {
         state.data[action.payload.index].isDone = action.payload.value;
+        updateTodoStatus(state.data[action.payload.index].title, action.payload.value ? 1 : 0)
       }
     },
     deleteTodo: (state: TodosState, action: PayloadAction<{ todo: Todo }>) => {
@@ -116,6 +125,7 @@ const todoSlice = createSlice({
         state.data = state.data.filter(
           (v) => v.title !== action.payload.todo.title
         );
+        deleteTodoFromDB(action.payload.todo.title)
       }
     },
   },
@@ -135,6 +145,6 @@ const todoSlice = createSlice({
 //   }
 // }
 
-export const { addTodo, updateTodo, toggleTodo, deleteTodo } =
+export const { loadTodo, addTodo, updateTodo, toggleTodo, deleteTodo } =
   todoSlice.actions;
 export default todoSlice.reducer;

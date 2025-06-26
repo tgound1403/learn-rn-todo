@@ -21,7 +21,7 @@ import {
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSelector, useDispatch } from "react-redux";
-import { addTodo, toggleTodo } from "../store/todoSlice";
+import { addTodo, loadTodo, toggleTodo } from "../store/todoSlice";
 import type { Todo } from "../store/todoSlice";
 import Item from "../component/item";
 import Clock from "../component/clock";
@@ -31,6 +31,7 @@ import { ThemeContext } from "../provider/themeProvider";
 import { getContacts } from "../bridges/contactModule";
 import { RootState } from "../store/store";
 import '../global.css';
+import { initDB } from "../database/todoDatabase";
 
 const HomeScreen = () => {
   const [modalVisibility, setModalVisibility] = useState(false);
@@ -87,9 +88,14 @@ const HomeScreen = () => {
 
   
   useEffect(() => {
-    getContacts().then((contacts) => console.log(contacts))
+    getContacts().then((contacts) => console.log(contacts.length))
   .catch((e) => console.error(e));
   }, []);
+
+    useEffect(() => {
+      initDB();
+      dispatch(loadTodo());
+    }, [dispatch]);
 
   const renderTodoItem = ({ item }: { item: Todo; index: number }) => {
     const actualIndex = todos.findIndex((todo) => todo.title === item.title);

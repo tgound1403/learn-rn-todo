@@ -13,8 +13,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { updateTodo, deleteTodo } from "../../store/todoSlice";
-import { DetailScreenProp } from "@/app/navigation/_layout";
 import { RootState } from "@/app/store/store";
+import { DetailScreenProp } from "../../_layout";
 
 // To typecheck our screens, we need to annotate the navigation and the route props received by a screen.
 // The navigator packages in React Navigation export generic types to define types for both the navigation
