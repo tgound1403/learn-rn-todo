@@ -17,7 +17,6 @@ import {
   Pressable,
   ScrollView,
   Alert,
-  ActivityIndicator,
   RefreshControl,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -25,8 +24,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSelector, useDispatch } from "react-redux";
 import {
   addTodoThunk,
-  loadTodos,
-  toggleTodo,
+  loadTodosThunk,
+  toggleTodoThunk,
 } from "../store/todoSlice";
 import type { Todo } from "../store/todoSlice";
 import Item from "../component/item";
@@ -108,15 +107,14 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(loadTodos());
+    dispatch(loadTodosThunk());
   }, [dispatch]);
 
   const renderTodoItem = ({ item }: { item: Todo; index: number }) => {
-    const actualIndex = todos.findIndex((todo) => todo.title === item.title);
     return (
       <Item
         todo={item}
-        onToggle={(v) => dispatch(toggleTodo({ id: actualIndex, value: v }))}
+        onToggle={(v) => dispatch(toggleTodoThunk({ id: item.id, isDone: v }))}
       />
     );
   };
@@ -140,7 +138,7 @@ const HomeScreen = () => {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await dispatch(loadTodos());
+    await dispatch(loadTodosThunk());
     setRefreshing(false);
   };
 

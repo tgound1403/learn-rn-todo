@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   deleteTodoFromDB,
   getTodosFromDB,
@@ -6,7 +6,6 @@ import {
   updateTodoContent,
   updateTodoStatus,
 } from "../database/todoDatabase";
-import { RootState } from "./store";
 export type Todo = {
   id: number;
   title: string;
@@ -25,35 +24,62 @@ export const initialState: TodosState = {
   loading: false
 };
 
-export const loadTodos = createAsyncThunk('todos/load', getTodosFromDB);
+export const loadTodosThunk = createAsyncThunk('todos/load', getTodosFromDB);
 
 type AddTodoPayload = {title: string; desc: string};
 
 export const addTodoThunk = createAsyncThunk(
   'todos/add',
   async (payload: AddTodoPayload) => {
-    await insertTodo(payload.title, payload.desc);
-    return await getTodosFromDB(); 
+    try {
+      await insertTodo(payload.title, payload.desc);
+      return await getTodosFromDB(); 
+    } catch (error) {
+      console.error('Error in addTodoThunk:', error);
+      throw error;
+    }
   }
 );
 
+type ToggleTodoPayload = {id: number, isDone: boolean};
 export const toggleTodoThunk = createAsyncThunk(
   'todos/toggle',
-  async (id: number, { getState }) => {
-    const state = getState() as RootState;
-    const todo = state.todos.data.find(t => t.id === id);
-    if (!todo) return [];
-    const newStatus = todo.isDone ? 0 : 1;
-    await updateTodoStatus(id, newStatus);
-    return await getTodosFromDB();
+  async (payload: ToggleTodoPayload, { getState }) => {
+    try {
+      const newStatus = payload.isDone ? 1 : 0;
+      await updateTodoStatus(payload.id, newStatus);
+      return await getTodosFromDB();
+    } catch (error) {
+      console.error('Error in toggleTodoThunk:', error);
+      throw error;
+    }
+  }
+);
+
+type UpdateTodoPayload = {id: number, todo: Todo};
+export const updateTodoThunk = createAsyncThunk(
+  'todos/update',
+  async (payload: UpdateTodoPayload, { getState }) => {
+    try {
+      await updateTodoContent(payload.id, payload.todo.title, payload.todo.desc);
+      return await getTodosFromDB();
+    } catch (error) {
+      console.error('Error in updateTodoThunk:', error);
+      throw error;
+    }
   }
 );
 
 export const deleteTodoThunk = createAsyncThunk(
   'todos/delete',
   async (id: number) => {
-    deleteTodoFromDB(id);
-    return await getTodosFromDB();
+    try {
+      await deleteTodoFromDB(id);
+      return await getTodosFromDB();
+    } catch (error) {
+      console.error('Error in deleteTodoThunk:', error);
+      throw error;
+    }
   }
 );
 
@@ -66,49 +92,39 @@ const todoSlice = createSlice({
   name: "todos",
   initialState: initialState,
   reducers: {
-    updateTodo: (
-      state: TodosState,
-      action: PayloadAction<{ id: number; newTodo: Todo }>
-    ) => {
+    // updateTodo: (
+    //   state: TodosState,
+    //   action: PayloadAction<{ id: number; newTodo: Todo }>
+    // ) => {
 
-        updateTodoContent(
-          action.payload.newTodo.title,
-          action.payload.newTodo.desc,
-          action.payload.id
-        );
-    
-    },
-    toggleTodo: (
-      state: TodosState,
-      action: PayloadAction<{ id: number; value: boolean }>
-    ) => {
-      if (state.data[action.payload.id]) {
-        updateTodoStatus(
-          action.payload.id,
-          action.payload.value ? 1 : 0
-        );
-      }
-    },
-    deleteTodo: (state: TodosState, action: PayloadAction<{ id: number }>) => {
-      deleteTodoFromDB(action.payload.id);
-    },
+    //     updateTodoContent(
+    //       action.payload.id
+    //       action.payload.newTodo.title,
+    //       action.payload.newTodo.desc,
+    //     );    
+    // }
   },
   extraReducers: builder => {
     builder
-      .addCase(loadTodos.pending, state => {
+      .addCase(loadTodosThunk.pending, state => {
         state.loading = true;
       })
-      .addCase(loadTodos.fulfilled, (state, action) => {
+      .addCase(loadTodosThunk.fulfilled, (state, action) => {
         state.data = action.payload;
         state.loading = false;
       })
-      .addCase(loadTodos.rejected, state => {
+      .addCase(loadTodosThunk.rejected, state => {
         state.loading = false;
       });
-      [addTodoThunk, toggleTodoThunk, deleteTodoThunk].forEach(thunk => {
-      builder.addCase(thunk.fulfilled, (state, action) => {
-        state.data = action.payload;
-      });
+      
+    [addTodoThunk, toggleTodoThunk, updateTodoThunk, deleteTodoThunk].forEach(thunk => {
+      builder
+        .addCase(thunk.fulfilled, (state, action) => {
+          state.data = action.payload;
+        })
+        .addCase(thunk.rejected, (state, action) => {
+          console.error(`Action ${thunk.typePrefix} rejected:`, action.error);
+        });
     });
   },
 });
@@ -127,6 +143,4 @@ const todoSlice = createSlice({
 //   }
 // }
 
-export const {updateTodo, toggleTodo, deleteTodo } =
-  todoSlice.actions;
 export default todoSlice.reducer;

@@ -12,9 +12,9 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../store";
-import { updateTodo, deleteTodo } from "../store/todoSlice";
 import { DetailScreenProp } from "../_layout";
+import { AppDispatch, RootState } from "../store/store";
+import { deleteTodoThunk, updateTodoThunk } from "../store/todoSlice";
 
 // To typecheck our screens, we need to annotate the navigation and the route props received by a screen.
 // The navigator packages in React Navigation export generic types to define types for both the navigation
@@ -22,7 +22,7 @@ import { DetailScreenProp } from "../_layout";
 const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
   const { title } = route.params;
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const todo = useSelector((state: RootState) =>
     state.todos.data.find((t) => t.title === title)
@@ -43,9 +43,10 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
 
   const handleSave = () => {
     dispatch(
-      updateTodo({
-        oldTitle: todo.title,
-        newTodo: {
+      updateTodoThunk({
+        id: todo.id,
+        todo: {
+          id: todo.id,
           title: newTitle,
           desc: newDesc,
           isDone: done,
@@ -126,7 +127,7 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
           <Pressable
             className="p-4 bg-red-500 w-1/2 rounded-lg"
             onPress={() => {
-              dispatch(deleteTodo({ todo: todo }));
+              dispatch(deleteTodoThunk(todo.id));
               navigation.goBack();
             }}
           >
