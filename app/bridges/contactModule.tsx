@@ -19,7 +19,7 @@ export async function requestContactPermission(): Promise<boolean> {
   return true;
 }
 
-export async function getContacts(): Promise<{ name: string; phone: string }[]> {
+export default async function getContacts(): Promise<{ name: string; phone: string }[]> {
   const granted = await requestContactPermission();
   if (!granted) throw new Error('Permission denied');
   CalendarModule.createCalendarEvent('testName', 'testLocation');

@@ -17,24 +17,33 @@ import {
   Pressable,
   ScrollView,
   Alert,
+  ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSelector, useDispatch } from "react-redux";
-import { addTodo, loadTodo, toggleTodo } from "../store/todoSlice";
+import {
+  addTodo,
+  loadTodos,
+  refreshData,
+  toggleTodo,
+} from "../store/todoSlice";
 import type { Todo } from "../store/todoSlice";
 import Item from "../component/item";
 import Clock from "../component/clock";
 import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemeContext } from "../provider/themeProvider";
-import { getContacts } from "../bridges/contactModule";
-import { RootState } from "../store/store";
-import '../global.css';
-import { initDB } from "../database/todoDatabase";
+import getContacts from "../bridges/contactModule";
+import store, { RootState } from "../store/store";
+import "../global.css";
+import {initDB} from "../database/todoDatabase";
 
 const HomeScreen = () => {
   const [modalVisibility, setModalVisibility] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
   const { toggleTheme, isDarkMode } = useContext(ThemeContext);
   const titleRef = useRef(null);
   const descRef = useRef(null);
@@ -63,6 +72,9 @@ const HomeScreen = () => {
   // In redux
   // get data a part of state with useSelector
   const todos: Todo[] = useSelector((state: RootState) => state.todos.data);
+  const loading: boolean = useSelector(
+    (state: RootState) => state.todos.loading
+  );
   // dispatch from useDispatch use to start an action
   const dispatch = useDispatch();
 
@@ -86,16 +98,20 @@ const HomeScreen = () => {
   | `componentWillUnmount` | `return () => {}` inside `useEffect` |
   */
 
-  
   useEffect(() => {
-    getContacts().then((contacts) => console.log(contacts.length))
-  .catch((e) => console.error(e));
+    getContacts()
+      .then((contacts) => console.log(contacts.length))
+      .catch((e) => console.error(e));
   }, []);
 
-    useEffect(() => {
-      initDB();
-      dispatch(loadTodo());
-    }, [dispatch]);
+  useEffect(() => {
+    initDB();
+  }, []);
+
+  useEffect(() => {
+    store.dispatch(loadTodos());
+    dispatch(refreshData());
+  }, [dispatch]);
 
   const renderTodoItem = ({ item }: { item: Todo; index: number }) => {
     const actualIndex = todos.findIndex((todo) => todo.title === item.title);
@@ -119,9 +135,24 @@ const HomeScreen = () => {
     setModalVisibility(!modalVisibility);
   }, [formState.title, formState.desc, dispatch, modalVisibility]);
 
-  const handleCancel= () => {
+  const handleCancel = () => {
     formDispatch({ type: "RESET" });
     setModalVisibility(!modalVisibility);
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await store.dispatch(loadTodos());
+    setRefreshing(false);
+  };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#2196f3" />
+        <Text>Loading todos...</Text>
+      </View>
+    );
   }
 
   return (
@@ -140,7 +171,18 @@ const HomeScreen = () => {
           </Pressable>
         </View>
 
-        <ScrollView showsVerticalScrollIndicator={false} className="h-5/6">
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              colors={["#2196f3"]}
+              tintColor="#2196f3"
+            />
+          }
+          className="h-5/6"
+        >
           <View className="my-6">
             <Text className="text-xl font-bold text-gray-800 mb-3 ml-2">
               Not completed ({activeTodos.length})
@@ -214,10 +256,7 @@ const HomeScreen = () => {
               className="border-2 border-slate-500 focus:border-blue-500 rounded-lg p-3 w-full"
             />
             <View className="flex flex-row gap-4 justify-center items-cente">
-              <Pressable
-                className="flex-1"
-                onPress={handleCancel}
-              >
+              <Pressable className="flex-1" onPress={handleCancel}>
                 <Text className="bg-red-500 rounded-lg text-white p-4 text-center">
                   Cancel
                 </Text>
