@@ -24,9 +24,8 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  addTodo,
+  addTodoThunk,
   loadTodos,
-  refreshData,
   toggleTodo,
 } from "../store/todoSlice";
 import type { Todo } from "../store/todoSlice";
@@ -110,7 +109,6 @@ const HomeScreen = () => {
 
   useEffect(() => {
     store.dispatch(loadTodos());
-    dispatch(refreshData());
   }, [dispatch]);
 
   const renderTodoItem = ({ item }: { item: Todo; index: number }) => {
@@ -118,7 +116,7 @@ const HomeScreen = () => {
     return (
       <Item
         todo={item}
-        onToggle={(v) => dispatch(toggleTodo({ index: actualIndex, value: v }))}
+        onToggle={(v) => dispatch(toggleTodo({ id: actualIndex, value: v }))}
       />
     );
   };
@@ -130,10 +128,10 @@ const HomeScreen = () => {
       titleRef.current?.focus();
       return;
     }
-    dispatch(addTodo({ title: formState.title, desc: formState.desc }));
+    store.dispatch(addTodoThunk({title: formState.title, desc: formState.desc}));
     formDispatch({ type: "RESET" });
     setModalVisibility(!modalVisibility);
-  }, [formState.title, formState.desc, dispatch, modalVisibility]);
+  }, [formState.title, formState.desc, modalVisibility]);
 
   const handleCancel = () => {
     formDispatch({ type: "RESET" });
@@ -190,7 +188,7 @@ const HomeScreen = () => {
             <FlatList
               data={activeTodos}
               renderItem={renderTodoItem}
-              keyExtractor={(item) => item.title}
+              keyExtractor={(item) => item.id.toString()}
               scrollEnabled={false}
               showsVerticalScrollIndicator={false}
             />
@@ -204,7 +202,7 @@ const HomeScreen = () => {
               <FlatList
                 data={completedTodos}
                 renderItem={renderTodoItem}
-                keyExtractor={(item) => item.title}
+                keyExtractor={(item) => item.id.toString()}
                 scrollEnabled={false}
                 showsVerticalScrollIndicator={false}
               />

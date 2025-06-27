@@ -50,32 +50,32 @@ export const insertTodo = async (title: string, desc: string) => {
   }
 };
 
-export const updateTodoStatus = (title: string, isDone: number) => {
+export const updateTodoStatus = (id: number, isDone: number) => {
   try {
-    db.runAsync("UPDATE todos SET isDone = ? WHERE title = ?;", [
+    db.runAsync("UPDATE todos SET isDone = ? WHERE id = ?;", [
       isDone,
-      title,
+      id,
     ]);
   } catch (e) {
     console.log(e);
   }
 };
 
-export const updateTodoContent = (oldTitle: string, title: string, desc: string) => {
+export const updateTodoContent = (id: number, title: string, desc: string) => {
   try {
-    db.runAsync("UPDATE todos SET title = ? AND desc = ? WHERE title = ?;", [
+    db.runAsync("UPDATE todos SET title = ? AND desc = ? WHERE id = ?;", [
       title,
       desc,
-      oldTitle,
+      id,
     ]);
   } catch (e) {
     console.log(e);
   }
 };
 
-export const deleteTodoFromDB = (title: string) => {
+export const deleteTodoFromDB = (id: number) => {
   try {
-    db.runAsync("DELETE FROM todos WHERE id = ?;", [title]);
+    db.runAsync("DELETE FROM todos WHERE id = ?;", id);
   } catch (e) {
     console.log(e);
   }

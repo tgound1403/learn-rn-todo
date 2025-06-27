@@ -12,8 +12,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
-import { updateTodo, deleteTodo } from "../../store/todoSlice";
-import { RootState } from "@/app/store/store";
+import { deleteTodoThunk, updateTodo } from "../../store/todoSlice";
+import store, { RootState } from "@/app/store/store";
 import { DetailScreenProp } from "../../_layout";
 
 // To typecheck our screens, we need to annotate the navigation and the route props received by a screen.
@@ -44,8 +44,9 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
   const handleSave = () => {
     dispatch(
       updateTodo({
-        oldTitle: todo.title,
+        id: todo.id,
         newTodo: {
+          id: todo.id,
           title: newTitle,
           desc: newDesc,
           isDone: done,
@@ -126,7 +127,7 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
           <Pressable
             className="p-4 bg-red-500 w-1/2 rounded-lg"
             onPress={() => {
-              dispatch(deleteTodo({ todo: todo }));
+              store.dispatch(deleteTodoThunk(todo.id));
               navigation.goBack();
             }}
           >

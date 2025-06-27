@@ -6,7 +6,9 @@ import {
   updateTodoContent,
   updateTodoStatus,
 } from "../database/todoDatabase";
+import { RootState } from "./store";
 export type Todo = {
+  id: number;
   title: string;
   desc: string;
   isDone: boolean;
@@ -23,9 +25,37 @@ export const initialState: TodosState = {
   loading: false
 };
 
-export const loadTodos = createAsyncThunk('todos/load', async () => {
-  return await getTodosFromDB();
-});
+export const loadTodos = createAsyncThunk('todos/load', getTodosFromDB);
+
+type AddTodoPayload = {title: string; desc: string};
+
+export const addTodoThunk = createAsyncThunk(
+  'todos/add',
+  async (payload: AddTodoPayload) => {
+    await insertTodo(payload.title, payload.desc);
+    return await getTodosFromDB(); 
+  }
+);
+
+export const toggleTodoThunk = createAsyncThunk(
+  'todos/toggle',
+  async (id: number, { getState }) => {
+    const state = getState() as RootState;
+    const todo = state.todos.data.find(t => t.id === id);
+    if (!todo) return [];
+    const newStatus = todo.isDone ? 0 : 1;
+    await updateTodoStatus(id, newStatus);
+    return await getTodosFromDB();
+  }
+);
+
+export const deleteTodoThunk = createAsyncThunk(
+  'todos/delete',
+  async (id: number) => {
+    deleteTodoFromDB(id);
+    return await getTodosFromDB();
+  }
+);
 
 // A modular piece of state + reducer + actions in one place (from Redux Toolkit)
 // automatically create actions and reducers
@@ -36,58 +66,31 @@ const todoSlice = createSlice({
   name: "todos",
   initialState: initialState,
   reducers: {
-    refreshData: (state: TodosState, _: PayloadAction<undefined>) => {
-      getTodosFromDB().then((res)=>state.data = res)
-    },
-    addTodo: (
-      state: TodosState,
-      action: PayloadAction<{ title: string; desc: string }>
-    ) => {
-      insertTodo(action.payload.title, action.payload.desc);
-      // state.data.push({
-      //   ...action.payload,
-      //   isDone: false,
-      //   createdAt: Date.now(),
-      // });
-    },
     updateTodo: (
       state: TodosState,
-      action: PayloadAction<{ oldTitle: string; newTodo: Todo }>
+      action: PayloadAction<{ id: number; newTodo: Todo }>
     ) => {
-      const idx = state.data.findIndex(
-        (t: Todo) => t.title === action.payload.oldTitle
-      );
-      if (idx !== -1) {
-        // state.data[idx] = action.payload.newTodo;
+
         updateTodoContent(
           action.payload.newTodo.title,
           action.payload.newTodo.desc,
-          action.payload.oldTitle
+          action.payload.id
         );
-      }
+    
     },
     toggleTodo: (
       state: TodosState,
-      action: PayloadAction<{ index: number; value: boolean }>
+      action: PayloadAction<{ id: number; value: boolean }>
     ) => {
-      if (state.data[action.payload.index]) {
-        // state.data[action.payload.index].isDone = action.payload.value;
+      if (state.data[action.payload.id]) {
         updateTodoStatus(
-          state.data[action.payload.index].title,
+          action.payload.id,
           action.payload.value ? 1 : 0
         );
       }
     },
-    deleteTodo: (state: TodosState, action: PayloadAction<{ todo: Todo }>) => {
-      const idx = state.data.findIndex(
-        (t: Todo) => t.title === action.payload.todo.title
-      );
-      if (idx !== -1) {
-        // state.data = state.data.filter(
-        //   (v) => v.title !== action.payload.todo.title
-        // );
-        deleteTodoFromDB(action.payload.todo.title);
-      }
+    deleteTodo: (state: TodosState, action: PayloadAction<{ id: number }>) => {
+      deleteTodoFromDB(action.payload.id);
     },
   },
   extraReducers: builder => {
@@ -102,6 +105,11 @@ const todoSlice = createSlice({
       .addCase(loadTodos.rejected, state => {
         state.loading = false;
       });
+      [addTodoThunk, toggleTodoThunk, deleteTodoThunk].forEach(thunk => {
+      builder.addCase(thunk.fulfilled, (state, action) => {
+        state.data = action.payload;
+      });
+    });
   },
 });
 
@@ -119,6 +127,6 @@ const todoSlice = createSlice({
 //   }
 // }
 
-export const {refreshData, addTodo, updateTodo, toggleTodo, deleteTodo } =
+export const {updateTodo, toggleTodo, deleteTodo } =
   todoSlice.actions;
 export default todoSlice.reducer;
