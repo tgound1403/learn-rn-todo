@@ -158,7 +158,7 @@ const HomeScreen = () => {
           </Pressable>
         </View>
 
-        <ScrollView
+        {todos.length !== 0 ? <ScrollView
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
@@ -197,8 +197,11 @@ const HomeScreen = () => {
               />
             </View>
           )}
-        </ScrollView>
-
+        </ScrollView>: <View className="flex flex-col justify-center items-center h-5/6">
+          <Text className="text-center text-gray-500 text-lg">
+            No tasks available. Please add a new task.
+            </Text>
+          </View>}
         <View className="flex relative mx-auto my-8 flex-row justify-center items-center">
           <Pressable
             className="border-2 bg-white w-52 elevation-md border-slate-500 rounded-full py-2 px-4"
