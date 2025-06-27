@@ -144,15 +144,6 @@ const HomeScreen = () => {
     setRefreshing(false);
   };
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#2196f3" />
-        <Text>Loading todos...</Text>
-      </View>
-    );
-  }
-
   return (
     <SafeAreaProvider>
       <SafeAreaView className="flex flex-col bg-gray-50 dark:bg-gray-700 p-4">
