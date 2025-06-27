@@ -35,7 +35,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemeContext } from "../provider/themeProvider";
 import getContacts from "../bridges/contactModule";
-import store, { RootState } from "../store/store";
+import { AppDispatch, RootState } from "../store/store";
 import "../global.css";
 import {initDB} from "../database/todoDatabase";
 
@@ -75,7 +75,7 @@ const HomeScreen = () => {
     (state: RootState) => state.todos.loading
   );
   // dispatch from useDispatch use to start an action
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   // useMemo is a React Hook that lets you cache the result of a calculation between re-renders.
   const completedTodos = useMemo(
@@ -108,7 +108,7 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
-    store.dispatch(loadTodos());
+    dispatch(loadTodos());
   }, [dispatch]);
 
   const renderTodoItem = ({ item }: { item: Todo; index: number }) => {
@@ -128,10 +128,10 @@ const HomeScreen = () => {
       titleRef.current?.focus();
       return;
     }
-    store.dispatch(addTodoThunk({title: formState.title, desc: formState.desc}));
+    dispatch(addTodoThunk({title: formState.title, desc: formState.desc}));
     formDispatch({ type: "RESET" });
     setModalVisibility(!modalVisibility);
-  }, [formState.title, formState.desc, modalVisibility]);
+  }, [formState.title, formState.desc, dispatch, modalVisibility]);
 
   const handleCancel = () => {
     formDispatch({ type: "RESET" });
@@ -140,7 +140,7 @@ const HomeScreen = () => {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await store.dispatch(loadTodos());
+    await dispatch(loadTodos());
     setRefreshing(false);
   };
 
