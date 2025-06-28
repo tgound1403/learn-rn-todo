@@ -20,12 +20,12 @@ import { deleteTodoThunk, updateTodoThunk } from "../store/todoSlice";
 // The navigator packages in React Navigation export generic types to define types for both the navigation
 // and route props from the corresponding navigator.
 const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
-  const { title } = route.params;
+  const { id } = route.params;
 
   const dispatch = useDispatch<AppDispatch>();
 
   const todo = useSelector((state: RootState) =>
-    state.todos.data.find((t) => t.title === title)
+    state.todos.data.find((t) => t.id === id)
   );
 
   const [editMode, setEditMode] = useState(false);
@@ -51,6 +51,7 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
           desc: newDesc,
           isDone: done,
           createdAt: todo.createdAt,
+          asignedTo: todo.asignedTo
         },
       })
     );
@@ -98,12 +99,13 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
           </Text>
           <Pressable
             onPress={() => {
-              navigation.navigate("Contact");
+              navigation.navigate("Contact", {todo: todo});
             }}
-            className="mt-4 mb-2 p-2 bg-blue-100 rounded-lg"
+            className="mt-4 mb-2 py-2 px-4 bg-blue-100 rounded-lg"
           >
-            <Text>
-              Contact
+            <Text className="font-semibold">
+              {todo.asignedTo
+                ? `${todo.asignedTo}` : "Not assigned"}
             </Text>
           </Pressable>
           {editMode ? (

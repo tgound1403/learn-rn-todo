@@ -1,15 +1,15 @@
-import { Todo } from "../../store/todoSlice";
+import { Todo } from "../store/todoSlice";
 import  db  from "./appDatabase";
 
 export const initDB = () => {
   db.execSync(
     `
-    CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, desc TEXT, createdAt STRING, isDone INT);
+    CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, desc TEXT, createdAt STRING, isDone INT, asignedTo STRING);
     `
   );
 };
 
-const dropDB = () => {
+export const dropDB = () => {
   db.execSync("");
 };
 
@@ -30,7 +30,7 @@ export const getTodos = (): Promise<Todo[]> => {
 export const insertTodo = async (title: string, desc: string): Promise<void> => {
   try {
     const statement = await db.prepareAsync(
-      "INSERT INTO todos (title, desc, createdAt, isDone) VALUES ($title, $desc, $createdAt, $isDone)"
+      "INSERT INTO todos (title, desc, createdAt, isDone, asignedTo) VALUES ($title, $desc, $createdAt, $isDone, '');"
     );
     await statement.executeAsync({
       $title: title,
@@ -56,14 +56,13 @@ export const updateTodoStatus = async (id: number, isDone: number): Promise<void
 
 export const updateTodoContent = async (
   id: number,
-  title: string,
-  desc: string
+  todo: Todo
 ): Promise<void> => {
   try {
     const statement = await db.prepareAsync(
-      "UPDATE todos SET title = $title, desc = $desc WHERE id = $id;"
+      "UPDATE todos SET title = $title, desc = $desc, asignedTo = $asignedTo WHERE id = $id;"
     );
-    await statement.executeAsync({$title: title, $desc: desc, $id: id});
+    await statement.executeAsync({$title: todo.title, $desc: todo.desc, $asignedTo: todo.asignedTo, $id: id});
   } catch (e) {
     console.log("Error updating todo content:", e);
     throw e;
@@ -78,5 +77,3 @@ export const deleteTodo = async (id: number): Promise<void> => {
     throw e;
   }
 };
-
-export default {}

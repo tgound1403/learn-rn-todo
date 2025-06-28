@@ -8,12 +8,13 @@ import ThemeProvider from "../provider/themeProvider";
 import store from "../store/store";
 import HomeScreen from "./home";
 import ContactScreen from "./contact";
+import { Todo } from "../store/todoSlice";
 
 // create an object type with mappings for route names to the params of the route
 type RootStackParamList = {
   Home: undefined;
-  Detail: { title: string };
-  Contact: undefined;
+  Detail: { id: number };
+  Contact: { todo: Todo };
 };
 
 // After we have defined the mapping, we need to tell our navigator to use it.
@@ -35,11 +36,11 @@ export default function AppStack() {
             component={DetailScreen}
             options={{ headerShown: false }}
           />
-          {/* <RootStack.Screen
+          <RootStack.Screen
             name="Contact"
             component={ContactScreen} 
-            options={{ headerShown: false }}
-          /> */}
+            options={{ headerShown: true }}
+          />
         </RootStack.Navigator>
       </ThemeProvider>
     </Provider>
@@ -55,4 +56,8 @@ export default function AppStack() {
 export type DetailScreenProp = NativeStackScreenProps<
   RootStackParamList,
   "Detail"
+>;
+export type ContactScreenProp = NativeStackScreenProps<
+  RootStackParamList,
+  "Contact"
 >;

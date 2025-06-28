@@ -38,6 +38,7 @@ import { AppDispatch, RootState } from "../store/store";
 import "./global.css";
 import {initDB} from "../database/todoDatabase";
 import { markContactsImported, shouldImportContacts } from "../database/storage";
+import { Contact, initContactDB, insertContact } from "@/database/contactDatabase";
 
 const HomeScreen = () => {
   const [modalVisibility, setModalVisibility] = useState(false);
@@ -97,11 +98,17 @@ const HomeScreen = () => {
 
 useEffect(() => {
   const loadContacts = async () => {
-    const shouldImport = await shouldImportContacts();
-    if (shouldImport) {
-      const contacts = await getContactsNative();
-      await saveContactsToSQLite(contacts);
-      await markContactsImported();
+    try {
+      const shouldImport = await shouldImportContacts();
+      if (shouldImport) {
+        const contacts = await getContactsNative();
+        console.log("Contacts loaded:", contacts);
+        await insertContact(contacts as Contact[]);
+        console.log("Contacts inserted into database");
+        await markContactsImported();
+      }
+    } catch (error) {
+      console.error("Error during contact load/init:", error);
     }
   };
 
@@ -111,6 +118,7 @@ useEffect(() => {
 
   useEffect(() => {
     initDB();
+    initContactDB()
   }, []);
 
   useEffect(() => {
@@ -300,7 +308,4 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
-function saveContactsToSQLite(contacts: { name: string; phone: string; }[]) {
-  throw new Error("Function not implemented.");
-}
 

@@ -1,5 +1,5 @@
-import {create} from "zustand";
-import {Contact, getContacts} from "../database/contactDatabase";
+import { create } from "zustand";
+import { Contact, getContacts } from "../database/contactDatabase";
 
 type ContactStore = {
   contacts: Contact[];
@@ -12,13 +12,18 @@ export const useContactsStore = create<ContactStore>((set) => ({
   loading: false,
 
   fetchContacts: async () => {
-    set({ loading: true });
-    const contacts = await getContacts();
-    set({ contacts, loading: false });
+    try {
+      set({ loading: true });
+      const contacts = await getContacts();
+      if (!contacts || contacts.length === 0) {
+        console.log("No contacts found");
+        set({ contacts: [], loading: false });
+        return;
+      }
+      set({ contacts, loading: false });
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+      set({ contacts: [], loading: false });
+    }
   },
 }));
-
-
-
-
-

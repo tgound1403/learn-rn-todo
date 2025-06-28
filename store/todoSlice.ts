@@ -6,12 +6,14 @@ import {
   updateTodoContent,
   updateTodoStatus,
 } from "../database/todoDatabase";
+
 export type Todo = {
   id: number;
   title: string;
   desc: string;
   isDone: boolean;
   createdAt: number;
+  asignedTo: string;
 };
 
 interface TodosState {
@@ -61,7 +63,7 @@ export const updateTodoThunk = createAsyncThunk(
   'todos/update',
   async (payload: UpdateTodoPayload, { getState }) => {
     try {
-      await updateTodoContent(payload.id, payload.todo.title, payload.todo.desc);
+      await updateTodoContent(payload.id, payload.todo);
       return await getTodos();
     } catch (error) {
       console.error('Error in updateTodoThunk:', error);

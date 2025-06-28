@@ -1,19 +1,21 @@
-import db from './appDatabase';
+import db from "./appDatabase";
 
-export type Contact = {  
+export type Contact = {
   id: number;
   name: string;
   phone: string;
-}; 
+};
 
 export const initContactDB = () => {
-  db.execSync(`
+  try {db.execSync(`
     CREATE TABLE IF NOT EXISTS contacts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT,
       phone STRING
     );
-  `);
+  `);} catch (e) {
+    console.log("Error initializing contact database:", e);
+  }
 };
 
 export const dropContactDB = () => {
@@ -34,18 +36,26 @@ export const getContacts = (): Promise<Contact[]> => {
   });
 };
 
-export const insertContact = async (name: string, phone: string): Promise<void> => {
+export const insertContact = async (contacts: Contact[]): Promise<void> => {
+  const statement = await db.prepareAsync(
+    "INSERT INTO contacts (name, phone) VALUES ($name, $phone)"
+  );
   try {
-    const statement = await db.prepareAsync(
-      "INSERT INTO contacts (name, phone) VALUES ($name, $phone)"
-    );
-    await statement.executeAsync({
-      $name: name,
-      $phone: phone,
-    });
+    await db.execAsync('BEGIN TRANSACTION');
+    for (const contact of contacts) {
+      await statement.executeAsync({
+        $name: contact.name,
+        $phone: contact.phone,
+      });
+    }
+    await db.execAsync('COMMIT');
+    console.log("Contacts inserted successfully");
   } catch (e) {
+    await db.execAsync('ROLLBACK');
     console.log("Error inserting contact:", e);
     throw e;
+  } finally {
+    await statement.finalizeAsync();
   }
 };
 

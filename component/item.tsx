@@ -17,7 +17,7 @@ export default function Item({
   return (
     <Pressable
       onPress={() => {
-        navigation.navigate("Detail", { title: todo.title });
+        navigation.navigate("Detail", { id: todo.id });
       }}
     >
       <View className={`flex flex-row bg-white elevation-md ${Platform.OS === 'android' ? "shadow-lg" : null} rounded-xl py-2 px-4 mb-3 mx-1 items-center border border-gray-100`}>
