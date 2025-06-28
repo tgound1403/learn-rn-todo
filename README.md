@@ -1,50 +1,207 @@
-# Welcome to your Expo app 👋
+# React Native Todo App 📱
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A feature-rich Todo application built with React Native, Expo, and TypeScript. This app demonstrates modern React Native development practices including state management, native modules, local database storage, and responsive UI design.
 
-## Get started
+## Features ✨
 
-1. Install dependencies
+- **Todo Management**: Create, edit, delete, and mark todos as complete
+- **Contact Integration**: Import and manage device contacts using native modules
+- **Local Database**: SQLite storage for todos and contacts
+- **Theme Support**: Dark and light mode with automatic switching
+- **Responsive Design**: Modern UI with NativeWind (Tailwind CSS for React Native)
+- **State Management**: Redux Toolkit for global state management
+- **File-based Routing**: Expo Router for seamless navigation
+- **Testing**: Jest setup for unit testing
+- **TypeScript**: Full type safety throughout the application
 
+## Tech Stack 🛠️
+
+### Core Technologies
+- **React Native** - Cross-platform mobile development
+- **Expo** - Development platform and toolchain
+- **TypeScript** - Type-safe JavaScript
+- **Expo Router** - File-based routing system
+
+### State Management & Data
+- **Redux Toolkit** - Global state management
+- **Expo SQLite** - Local database storage
+- **AsyncStorage** - Persistent storage
+
+### UI & Styling
+- **NativeWind** - Tailwind CSS for React Native
+- **React Native Reanimated** - Smooth animations
+- **React Native Gesture Handler** - Touch interactions
+- **Expo Vector Icons** - Icon library
+
+### Development Tools
+- **Jest** - Testing framework
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
+
+## Setup 🚀
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or yarn
+- Expo CLI
+- iOS Simulator (for iOS development)
+- Android Studio (for Android development)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd learn-rn-todo
+   ```
+
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-2. Start the app
-
+3. **Start the development server**
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+### Running the App
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **iOS Simulator**: Press `i` in the terminal or scan QR code with Expo Go
+- **Android Emulator**: Press `a` in the terminal or scan QR code with Expo Go
+- **Physical Device**: Scan the QR code with Expo Go app
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Available Scripts
 
 ```bash
-npm run reset-project
+# Start development server
+npm start
+
+# Run on iOS
+npm run ios
+
+# Run on Android
+npm run android
+
+# Run on web
+npm run web
+
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+
+# Lint code
+npm run lint
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Project Structure 📁
 
-## Learn more
+```
+src/
+├── app/                    # Expo Router screens and navigation
+│   ├── _layout.tsx        # Root layout component
+│   ├── home.tsx           # Main todo screen
+│   ├── login.tsx          # Authentication screen
+│   ├── contact.tsx        # Contact management screen
+│   └── [id].tsx           # Dynamic todo detail screen
+├── component/             # Reusable UI components
+│   ├── item.tsx           # Todo item component
+│   └── clock.tsx          # Clock display component
+├── store/                 # Redux store and slices
+│   ├── store.ts           # Redux store configuration
+│   ├── todoSlice.ts       # Todo state management
+│   └── contactStore.ts    # Contact state management
+├── database/              # Database layer
+│   ├── appDatabase.ts     # Database initialization
+│   ├── todoDatabase.ts    # Todo database operations
+│   ├── contactDatabase.ts # Contact database operations
+│   └── storage.ts         # AsyncStorage utilities
+├── bridges/               # Native module bridges
+│   └── contactModule.tsx  # Contact native module
+├── provider/              # Context providers
+│   └── themeProvider.tsx  # Theme context provider
+└── tests/                 # Test files
+    ├── component/         # Component tests
+    ├── database/          # Database tests
+    └── store/             # Store tests
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Key Features Implementation 🔧
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Todo Management
+- Redux Toolkit for state management
+- SQLite database for persistence
+- CRUD operations with optimistic updates
+- Pull-to-refresh functionality
 
-## Join the community
+### Contact Integration
+- Native module bridge for device contacts
+- Automatic contact import on first launch
+- Contact database storage
+- Contact management interface
 
-Join our community of developers creating universal apps.
+### Theme System
+- Context-based theme management
+- Dark/light mode toggle
+- Persistent theme preference
+- Responsive color schemes
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Database Architecture
+- SQLite for structured data storage
+- AsyncStorage for simple key-value pairs
+- Database initialization and migration
+- Error handling and recovery
+
+## Testing 🧪
+
+The project includes comprehensive testing setup:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+```
+
+Test files are organized to mirror the source structure:
+- Component tests for UI components
+- Database tests for data operations
+- Store tests for Redux logic
+
+## Contributing 🤝
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Commit Message Convention
+- `feat:` for new features
+- `fix:` for bug fixes
+- `docs:` for documentation changes
+- `style:` for formatting changes
+- `refactor:` for code refactoring
+- `test:` for adding tests
+- `chore:` for maintenance tasks
+
+## License 📄
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Learn More 📚
+
+- [Expo Documentation](https://docs.expo.dev/)
+- [React Native Documentation](https://reactnative.dev/)
+- [Redux Toolkit Documentation](https://redux-toolkit.js.org/)
+- [NativeWind Documentation](https://www.nativewind.dev/)
+- [Expo Router Documentation](https://expo.github.io/router/)
