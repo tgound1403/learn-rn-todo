@@ -9,9 +9,11 @@ import store from "../store/store";
 import HomeScreen from "./home";
 import ContactScreen from "./contact";
 import { Todo } from "../store/todoSlice";
+import LoginScreen from "./login";
 
 // create an object type with mappings for route names to the params of the route
 type RootStackParamList = {
+  Login: undefined
   Home: undefined;
   Detail: { id: number };
   Contact: { todo: Todo };
@@ -26,11 +28,15 @@ export default function AppStack() {
       <ThemeProvider>
         <RootStack.Navigator>
           <RootStack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <RootStack.Screen
             name="Home"
             component={HomeScreen}
             options={{ headerShown: false }}
           />
-
           <RootStack.Screen
             name="Detail"
             component={DetailScreen}

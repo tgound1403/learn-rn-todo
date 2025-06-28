@@ -42,3 +42,8 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# Test coverage
+coverage/
+*.lcov
+.nyc_output/

@@ -4,7 +4,7 @@ import AppStack from "./_layout";
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <NavigationContainer initialState={{ routes: [{ name: "Login" }] }}>
         <AppStack />
     </NavigationContainer>
   );
