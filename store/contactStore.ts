@@ -1,14 +1,13 @@
-import create from "zustand";
+import {create} from "zustand";
 import {Contact, getContacts} from "../database/contactDatabase";
 
 type ContactStore = {
   contacts: Contact[];
   loading: boolean;
   fetchContacts: () => Promise<void>;
-  syncContacts: (newContacts: Contact[]) => Promise<void>;
 };
 
-const useContactsStore = create<ContactStore>((set) => ({
+export const useContactsStore = create<ContactStore>((set) => ({
   contacts: [],
   loading: false,
 
@@ -19,7 +18,6 @@ const useContactsStore = create<ContactStore>((set) => ({
   },
 }));
 
-export default useContactsStore;
 
 
 

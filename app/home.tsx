@@ -71,9 +71,7 @@ const HomeScreen = () => {
   // In redux
   // get data a part of state with useSelector
   const todos: Todo[] = useSelector((state: RootState) => state.todos.data);
-  const loading: boolean = useSelector(
-    (state: RootState) => state.todos.loading
-  );
+
   // dispatch from useDispatch use to start an action
   const dispatch = useDispatch<AppDispatch>();
 

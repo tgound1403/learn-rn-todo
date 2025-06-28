@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import useContactsStore from "../store/contactStore";
+import {useContactsStore} from "../store/contactStore";
 import getContactsNative from "../bridges/contactModule";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, FlatList, RefreshControl } from "react-native";
 
 const ContactScreen = () => {
-  const { contacts, loading, fetchContacts, syncContacts } = useContactsStore();
+  const { contacts, loading, fetchContacts } = useContactsStore();
 
   useEffect(() => {
     fetchContacts();
@@ -13,7 +13,6 @@ const ContactScreen = () => {
 
   const handleRefresh = async () => {
     const newDeviceContacts = await getContactsNative();
-    await syncContacts(newDeviceContacts);
   };
 
   if (!contacts) {
