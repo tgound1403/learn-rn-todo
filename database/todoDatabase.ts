@@ -1,20 +1,19 @@
-import { Todo } from "../store/todoSlice";
+import { Todo } from "../../store/todoSlice";
 import  db  from "./appDatabase";
 
 export const initDB = () => {
   db.execSync(
     `
     CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, desc TEXT, createdAt STRING, isDone INT);
-    CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone STRING);
     `
   );
 };
 
-export const dropDB = () => {
+const dropDB = () => {
   db.execSync("");
 };
 
-export const getTodosFromDB = (): Promise<Todo[]> => {
+export const getTodos = (): Promise<Todo[]> => {
   return new Promise((resolve, reject) => {
     try {
       db.getAllAsync("SELECT * FROM todos;")
@@ -71,7 +70,7 @@ export const updateTodoContent = async (
   }
 };
 
-export const deleteTodoFromDB = async (id: number): Promise<void> => {
+export const deleteTodo = async (id: number): Promise<void> => {
   try {
     await db.runAsync("DELETE FROM todos WHERE id = ?;", id);
   } catch (e) {
@@ -79,3 +78,5 @@ export const deleteTodoFromDB = async (id: number): Promise<void> => {
     throw e;
   }
 };
+
+export default {}

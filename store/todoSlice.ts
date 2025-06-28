@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
-  deleteTodoFromDB,
-  getTodosFromDB,
+  deleteTodo,
+  getTodos,
   insertTodo,
   updateTodoContent,
   updateTodoStatus,
@@ -24,7 +24,7 @@ export const initialState: TodosState = {
   loading: false
 };
 
-export const loadTodosThunk = createAsyncThunk('todos/load', getTodosFromDB);
+export const loadTodosThunk = createAsyncThunk('todos/load', getTodos);
 
 type AddTodoPayload = {title: string; desc: string};
 
@@ -33,7 +33,7 @@ export const addTodoThunk = createAsyncThunk(
   async (payload: AddTodoPayload) => {
     try {
       await insertTodo(payload.title, payload.desc);
-      return await getTodosFromDB(); 
+      return await getTodos(); 
     } catch (error) {
       console.error('Error in addTodoThunk:', error);
       throw error;
@@ -48,7 +48,7 @@ export const toggleTodoThunk = createAsyncThunk(
     try {
       const newStatus = payload.isDone ? 1 : 0;
       await updateTodoStatus(payload.id, newStatus);
-      return await getTodosFromDB();
+      return await getTodos();
     } catch (error) {
       console.error('Error in toggleTodoThunk:', error);
       throw error;
@@ -62,7 +62,7 @@ export const updateTodoThunk = createAsyncThunk(
   async (payload: UpdateTodoPayload, { getState }) => {
     try {
       await updateTodoContent(payload.id, payload.todo.title, payload.todo.desc);
-      return await getTodosFromDB();
+      return await getTodos();
     } catch (error) {
       console.error('Error in updateTodoThunk:', error);
       throw error;
@@ -74,8 +74,8 @@ export const deleteTodoThunk = createAsyncThunk(
   'todos/delete',
   async (id: number) => {
     try {
-      await deleteTodoFromDB(id);
-      return await getTodosFromDB();
+      await deleteTodo(id);
+      return await getTodos();
     } catch (error) {
       console.error('Error in deleteTodoThunk:', error);
       throw error;

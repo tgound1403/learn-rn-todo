@@ -33,10 +33,11 @@ import Clock from "../component/clock";
 import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemeContext } from "../provider/themeProvider";
-import getContacts from "../bridges/contactModule";
+import getContactsNative from "../bridges/contactModule";
 import { AppDispatch, RootState } from "../store/store";
-import "../global.css";
+import "./global.css";
 import {initDB} from "../database/todoDatabase";
+import { markContactsImported, shouldImportContacts } from "../database/storage";
 
 const HomeScreen = () => {
   const [modalVisibility, setModalVisibility] = useState(false);
@@ -96,11 +97,19 @@ const HomeScreen = () => {
   | `componentWillUnmount` | `return () => {}` inside `useEffect` |
   */
 
-  useEffect(() => {
-    getContacts()
-      .then((contacts) => console.log(contacts.length))
-      .catch((e) => console.error(e));
-  }, []);
+useEffect(() => {
+  const loadContacts = async () => {
+    const shouldImport = await shouldImportContacts();
+    if (shouldImport) {
+      const contacts = await getContactsNative();
+      await saveContactsToSQLite(contacts);
+      await markContactsImported();
+    }
+  };
+
+  loadContacts();
+}, []);
+
 
   useEffect(() => {
     initDB();
@@ -293,3 +302,7 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
+function saveContactsToSQLite(contacts: { name: string; phone: string; }[]) {
+  throw new Error("Function not implemented.");
+}
+

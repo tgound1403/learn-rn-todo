@@ -12,9 +12,9 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteTodoThunk, updateTodo } from "../../store/todoSlice";
-import store, { RootState } from "@/app/store/store";
-import { DetailScreenProp } from "../../_layout";
+import { DetailScreenProp } from "./_layout";
+import { AppDispatch, RootState } from "../store/store";
+import { deleteTodoThunk, updateTodoThunk } from "../store/todoSlice";
 
 // To typecheck our screens, we need to annotate the navigation and the route props received by a screen.
 // The navigator packages in React Navigation export generic types to define types for both the navigation
@@ -22,7 +22,7 @@ import { DetailScreenProp } from "../../_layout";
 const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
   const { title } = route.params;
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const todo = useSelector((state: RootState) =>
     state.todos.data.find((t) => t.title === title)
@@ -43,9 +43,9 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
 
   const handleSave = () => {
     dispatch(
-      updateTodo({
+      updateTodoThunk({
         id: todo.id,
-        newTodo: {
+        todo: {
           id: todo.id,
           title: newTitle,
           desc: newDesc,
@@ -93,6 +93,19 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
               {done ? "Done" : "To do"}
             </Text>
           </View>
+          <Text className="text-gray-500 text-sm">
+            Created at: {new Date(todo.createdAt).toLocaleDateString()}
+          </Text>
+          <Pressable
+            onPress={() => {
+              navigation.navigate("Contact");
+            }}
+            className="mt-4 mb-2 p-2 bg-blue-100 rounded-lg"
+          >
+            <Text>
+              Contact
+            </Text>
+          </Pressable>
           {editMode ? (
             <TextInput
               className="text-lg text-gray-700 border-b border-blue-200 w-full mt-4"
@@ -127,7 +140,7 @@ const DetailScreen = ({ route, navigation }: DetailScreenProp) => {
           <Pressable
             className="p-4 bg-red-500 w-1/2 rounded-lg"
             onPress={() => {
-              store.dispatch(deleteTodoThunk(todo.id));
+              dispatch(deleteTodoThunk(todo.id));
               navigation.goBack();
             }}
           >
