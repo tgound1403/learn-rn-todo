@@ -70,20 +70,20 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView>
-      <View className="flex h-screen items-center justify-center flex-col gap-4">
-        <Text className="text-blue-500" onPress={hasPreviousSignIn}>
+      <View className="flex h-scree tems-center justify-center flex-col gap-4">
+        <Text className="text-blue- " onPress={hasPreviousSignIn}>
           Has Previous Sign-In
         </Text>
-        <Text className="text-blue-500" onPress={signIn}>
+        <Text className="text-blue- " onPress={signIn}>
           Sign In
         </Text>
-        <Text className="text-blue-500" onPress={signOut}>
+        <Text className="text-blue- " onPress={signOut}>
           Sign Out
         </Text>
-        <Text className="text-blue-500" onPress={getCurrentUser}>
+        <Text className="text-blue- " onPress={getCurrentUser}>
           Get Current User
         </Text>
-        <Text className="text-blue-500" onPress={revokeAccess}>
+        <Text className="text-blue- " onPress={revokeAccess}>
           Revoke Access
         </Text>
       </View>
