@@ -1,4 +1,3 @@
-import React from "react";
 import "./global.css";
 import { Provider } from "react-redux";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -10,10 +9,11 @@ import HomeScreen from "./home";
 import ContactScreen from "./contact";
 import { Todo } from "../store/todoSlice";
 import LoginScreen from "./login";
+const React = require("react");
 
 // create an object type with mappings for route names to the params of the route
 type RootStackParamList = {
-  Login: undefined
+  Login: undefined;
   Home: undefined;
   Detail: { id: number };
   Contact: { todo: Todo };
@@ -44,7 +44,7 @@ export default function AppStack() {
           />
           <RootStack.Screen
             name="Contact"
-            component={ContactScreen} 
+            component={ContactScreen}
             options={{ headerShown: true }}
           />
         </RootStack.Navigator>
@@ -67,3 +67,10 @@ export type ContactScreenProp = NativeStackScreenProps<
   RootStackParamList,
   "Contact"
 >;
+
+export type LoginScreenProp = NativeStackScreenProps<
+  RootStackParamList,
+  "Login"
+>;
+
+export type HomeScreenProp = NativeStackScreenProps<RootStackParamList, "Home">;

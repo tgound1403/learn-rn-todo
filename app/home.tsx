@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   useEffect,
@@ -36,17 +36,31 @@ import { ThemeContext } from "../provider/themeProvider";
 import getContactsNative from "../bridges/contactModule";
 import { AppDispatch, RootState } from "../store/store";
 import "./global.css";
-import {initDB} from "../database/todoDatabase";
-import { markContactsImported, shouldImportContacts } from "../database/storage";
-import { Contact, initContactDB, insertContact } from "@/database/contactDatabase";
+import { initDB } from "../database/todoDatabase";
+import {
+  markContactsImported,
+  shouldImportContacts,
+} from "../database/storage";
+import {
+  Contact,
+  initContactDB,
+  insertContact,
+} from "@/database/contactDatabase";
+import { useGoogleSignInStore } from "@/store/googleSignInStore";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { HomeScreenProp } from "./_layout";
 
-const HomeScreen = () => {
+const React = require("react");
+
+const HomeScreen = ({ route, navigation }: HomeScreenProp) => {
   const [modalVisibility, setModalVisibility] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const { toggleTheme, isDarkMode } = useContext(ThemeContext);
   const titleRef = useRef(null);
   const descRef = useRef(null);
+
+  const { user, signOut } = useGoogleSignInStore();
 
   const initialFormState: FormState = {
     title: "",
@@ -96,29 +110,28 @@ const HomeScreen = () => {
   | `componentWillUnmount` | `return () => {}` inside `useEffect` |
   */
 
-useEffect(() => {
-  const loadContacts = async () => {
-    try {
-      const shouldImport = await shouldImportContacts();
-      if (shouldImport) {
-        const contacts = await getContactsNative();
-        console.log("Contacts loaded:", contacts);
-        await insertContact(contacts as Contact[]);
-        console.log("Contacts inserted into database");
-        await markContactsImported();
+  useEffect(() => {
+    const loadContacts = async () => {
+      try {
+        const shouldImport = await shouldImportContacts();
+        if (shouldImport) {
+          const contacts = await getContactsNative();
+          console.log("Contacts loaded:", contacts.length);
+          await insertContact(contacts as Contact[]);
+          console.log("Contacts inserted into database");
+          await markContactsImported();
+        }
+      } catch (error) {
+        console.error("Error during contact load/init:", error);
       }
-    } catch (error) {
-      console.error("Error during contact load/init:", error);
-    }
-  };
+    };
 
-  loadContacts();
-}, []);
-
+    loadContacts();
+  }, []);
 
   useEffect(() => {
     initDB();
-    initContactDB()
+    initContactDB();
   }, []);
 
   useEffect(() => {
@@ -141,7 +154,7 @@ useEffect(() => {
       titleRef.current?.focus();
       return;
     }
-    dispatch(addTodoThunk({title: formState.title, desc: formState.desc}));
+    dispatch(addTodoThunk({ title: formState.title, desc: formState.desc }));
     formDispatch({ type: "RESET" });
     setModalVisibility(!modalVisibility);
   }, [formState.title, formState.desc, dispatch, modalVisibility]);
@@ -173,50 +186,67 @@ useEffect(() => {
           </Pressable>
         </View>
 
-        {todos.length !== 0 ? <ScrollView
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={handleRefresh}
-              colors={["#2196f3"]}
-              tintColor="#2196f3"
-            />
-          }
-          className="h-5/6"
-        >
-          <View className="my-6">
-            <Text className="text-xl font-bold text-gray-800 mb-3 ml-2">
-              Not completed ({activeTodos.length})
-            </Text>
-            <FlatList
-              data={activeTodos}
-              renderItem={renderTodoItem}
-              keyExtractor={(item) => item.id.toString()}
-              scrollEnabled={false}
-              showsVerticalScrollIndicator={false}
-            />
-          </View>
+        <View className="px-3 mt-6 flex flex-row justify-between">
+          <Text className="font-bold text-2xl">Hello {user?.user.name}</Text>
+          <AntDesign
+            onPress={() => {
+              signOut();
+              navigation.popToTop();
+            }}
+            name="logout"
+            size={24}
+            color="black"
+          />
+        </View>
 
-          {completedTodos.length > 0 && (
-            <View className="mb-6">
-              <Text className="text-xl font-bold text-gray-600 mb-3 ml-2">
-                Done ({completedTodos.length})
+        {todos.length !== 0 ? (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                colors={["#2196f3"]}
+                tintColor="#2196f3"
+              />
+            }
+            className="h-3/4"
+          >
+            <View className="my-6">
+              <Text className="text-xl font-bold text-gray-800 mb-3 ml-2">
+                Not completed ({activeTodos.length})
               </Text>
               <FlatList
-                data={completedTodos}
+                data={activeTodos}
                 renderItem={renderTodoItem}
                 keyExtractor={(item) => item.id.toString()}
                 scrollEnabled={false}
                 showsVerticalScrollIndicator={false}
               />
             </View>
-          )}
-        </ScrollView>: <View className="flex flex-col justify-center items-center h-5/6">
-          <Text className="text-center text-gray-500 text-lg">
-            No tasks available. Please add a new task.
+
+            {completedTodos.length > 0 && (
+              <View className="mb-6">
+                <Text className="text-xl font-bold text-gray-600 mb-3 ml-2">
+                  Done ({completedTodos.length})
+                </Text>
+                <FlatList
+                  data={completedTodos}
+                  renderItem={renderTodoItem}
+                  keyExtractor={(item) => item.id.toString()}
+                  scrollEnabled={false}
+                  showsVerticalScrollIndicator={false}
+                />
+              </View>
+            )}
+          </ScrollView>
+        ) : (
+          <View className="flex flex-col justify-center items-center h-3/4">
+            <Text className="text-center text-gray-500 text-lg">
+              No tasks available. Please add a new task.
             </Text>
-          </View>}
+          </View>
+        )}
         <View className="flex relative mx-auto my-8 flex-row justify-center items-center">
           <Pressable
             className="border-2 bg-white w-52 elevation-md border-slate-500 rounded-full py-2 px-4"
@@ -308,4 +338,3 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
-
