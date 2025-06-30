@@ -9,7 +9,7 @@ import HomeScreen from "./home";
 import ContactScreen from "./contact";
 import { Todo } from "../store/todoSlice";
 import LoginScreen from "./login";
-const React = require("react");
+import React from 'react';
 
 // create an object type with mappings for route names to the params of the route
 type RootStackParamList = {

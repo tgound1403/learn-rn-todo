@@ -22,6 +22,6 @@ export async function requestContactPermission(): Promise<boolean> {
 export default async function getContactsNative(): Promise<{ name: string; phone: string }[]> {
   const granted = await requestContactPermission();
   if (!granted) throw new Error('Permission denied');
-  CalendarModule.createCalendarEvent('testName', 'testLocation');
+  // CalendarModule.createCalendarEvent('testName', 'testLocation');
   return ContactsModule.getContacts();
 }

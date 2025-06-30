@@ -1,7 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import AppStack from "./_layout";
-
-const React = require("react");
+import React from "react";
 
 export default function App() {
   return (

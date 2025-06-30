@@ -28,9 +28,7 @@ export const signOut = async () => {
 };
 
 export const configureGoogleSignin = () => {
-    GoogleSignin.configure({
-      webClientId: '230862524329-nr06bh54frcr4kkg59e550nnghlp2qr7.apps.googleusercontent.com'
-    });
+    GoogleSignin.configure();
 }
 
 export const getCurrentUser = () : User | null  => {

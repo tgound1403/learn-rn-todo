@@ -1,4 +1,4 @@
-import {
+import React,{
   useCallback,
   useContext,
   useEffect,
@@ -49,8 +49,6 @@ import {
 import { useGoogleSignInStore } from "@/store/googleSignInStore";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { HomeScreenProp } from "./_layout";
-
-const React = require("react");
 
 const HomeScreen = ({ route, navigation }: HomeScreenProp) => {
   const [modalVisibility, setModalVisibility] = useState(false);
@@ -186,15 +184,15 @@ const HomeScreen = ({ route, navigation }: HomeScreenProp) => {
           </Pressable>
         </View>
 
-        <View className="px-3 mt-6 flex flex-row justify-between">
-          <Text className="font-bold text-2xl">Hello {user?.user.name}</Text>
+        <View className="px-3 my-6 flex flex-row justify-between">
+          <Text className="font-bold text-2xl">Have a nice day, {user?.user.givenName}!</Text>
           <AntDesign
             onPress={() => {
               signOut();
               navigation.popToTop();
             }}
             name="logout"
-            size={24}
+            size={22}
             color="black"
           />
         </View>
