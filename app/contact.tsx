@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useContactsStore } from "../store/contactStore";
-import getContactsNative from "../bridges/contactModule";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
@@ -25,9 +24,7 @@ const ContactScreen = ({route, navigation}: ContactScreenProp) => {
     console.log("Contacts fetched:", contacts);
   }, []);
 
-  const handleRefresh = async () => {
-    const newDeviceContacts = await getContactsNative();
-  };
+  const handleRefresh = async () => {};
 
   if (!contacts || contacts.length === 0) {
     return (
@@ -47,7 +44,6 @@ const ContactScreen = ({route, navigation}: ContactScreenProp) => {
           <Pressable
             onPress={() => {
               console.log("Selected contact:", item)
-              navigation.popTo("Detail", {id: todo.id});
               dispatch(updateTodoThunk({
                 id: todo.id,
                 todo: {
@@ -58,7 +54,7 @@ const ContactScreen = ({route, navigation}: ContactScreenProp) => {
                   createdAt: todo.createdAt,
                   asignedTo: item.name
                 }}));
-              navigation.goBack();
+              navigation.popTo("Detail", {id: todo.id});
             }}
             className="mb-4"
           >

@@ -1,10 +1,17 @@
 import { create } from "zustand";
-import { Contact, getContacts } from "../database/contactDatabase";
+import {
+  Contact,
+  getContacts,
+  insertContact,
+} from "../database/contactDatabase";
+import { markContactsImported, shouldImportContacts } from "@/database/storage";
+import getContactsNative from "@/bridges/contactModule";
 
 type ContactStore = {
   contacts: Contact[];
   loading: boolean;
   fetchContacts: () => Promise<void>;
+  getContactsFromDevice: () => void;
 };
 
 export const useContactsStore = create<ContactStore>((set) => ({
@@ -24,6 +31,21 @@ export const useContactsStore = create<ContactStore>((set) => ({
     } catch (error) {
       console.error("Error fetching contacts:", error);
       set({ contacts: [], loading: false });
+    }
+  },
+
+  getContactsFromDevice: async () => {
+    try {
+      const shouldImport = await shouldImportContacts();
+      if (shouldImport) {
+        const contacts = await getContactsNative();
+        console.log("Contacts loaded:", contacts.length);
+        await insertContact(contacts as Contact[]);
+        console.log("Contacts inserted into database");
+        await markContactsImported();
+      }
+    } catch (error) {
+      console.error("Error during contact load/init:", error);
     }
   },
 }));

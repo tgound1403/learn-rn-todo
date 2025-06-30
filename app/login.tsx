@@ -22,7 +22,7 @@ const LoginScreen = () => {
     } else {
       console.log("User is not signed in");
     }
-  }, [isSignedIn, user, navigation]);
+  }, [isSignedIn, user, navigation]); 
 
   return (
     <SafeAreaView>

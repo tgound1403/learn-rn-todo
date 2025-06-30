@@ -33,22 +33,16 @@ import Clock from "../component/clock";
 import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemeContext } from "../provider/themeProvider";
-import getContactsNative from "../bridges/contactModule";
 import { AppDispatch, RootState } from "../store/store";
 import "./global.css";
 import { initDB } from "../database/todoDatabase";
 import {
-  markContactsImported,
-  shouldImportContacts,
-} from "../database/storage";
-import {
-  Contact,
   initContactDB,
-  insertContact,
 } from "@/database/contactDatabase";
 import { useGoogleSignInStore } from "@/store/googleSignInStore";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { HomeScreenProp } from "./_layout";
+import { useContactsStore } from "@/store/contactStore";
 
 const HomeScreen = ({ route, navigation }: HomeScreenProp) => {
   const [modalVisibility, setModalVisibility] = useState(false);
@@ -59,6 +53,7 @@ const HomeScreen = ({ route, navigation }: HomeScreenProp) => {
   const descRef = useRef(null);
 
   const { user, signOut } = useGoogleSignInStore();
+  const {getContactsFromDevice} = useContactsStore();
 
   const initialFormState: FormState = {
     title: "",
@@ -109,23 +104,8 @@ const HomeScreen = ({ route, navigation }: HomeScreenProp) => {
   */
 
   useEffect(() => {
-    const loadContacts = async () => {
-      try {
-        const shouldImport = await shouldImportContacts();
-        if (shouldImport) {
-          const contacts = await getContactsNative();
-          console.log("Contacts loaded:", contacts.length);
-          await insertContact(contacts as Contact[]);
-          console.log("Contacts inserted into database");
-          await markContactsImported();
-        }
-      } catch (error) {
-        console.error("Error during contact load/init:", error);
-      }
-    };
-
-    loadContacts();
-  }, []);
+    getContactsFromDevice();
+  }, [getContactsFromDevice]);
 
   useEffect(() => {
     initDB();

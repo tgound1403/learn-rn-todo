@@ -1,7 +1,6 @@
 import ReactNative,{ PermissionsAndroid, Platform } from 'react-native';
 
 const  {ContactsModule}  = ReactNative.NativeModules;
-const { CalendarModule } = ReactNative.NativeModules;
 
 
 export async function requestContactPermission(): Promise<boolean> {
@@ -22,6 +21,5 @@ export async function requestContactPermission(): Promise<boolean> {
 export default async function getContactsNative(): Promise<{ name: string; phone: string }[]> {
   const granted = await requestContactPermission();
   if (!granted) throw new Error('Permission denied');
-  // CalendarModule.createCalendarEvent('testName', 'testLocation');
   return ContactsModule.getContacts();
 }
